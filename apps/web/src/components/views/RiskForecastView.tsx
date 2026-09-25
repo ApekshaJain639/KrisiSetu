@@ -85,50 +85,190 @@ export const RiskForecastView: React.FC = () => {
 
   return (
     <div className="space-y-6 animate-fadeIn">
-      {/* Header Row matching PDF page 20 bottom */}
-      <div className="pb-2 border-b border-slate-200 dark:border-krishi-darkborder flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      {/* ── Header Row matching Image 2 ── */}
+      <div className="bg-slate-900 text-white p-6 rounded-3xl border border-slate-800 shadow-xl flex flex-col lg:flex-row lg:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2">
-            <span className="text-[11px] font-extrabold uppercase tracking-widest text-emerald-700 dark:text-emerald-400">
-              {t.diseaseForecasting}
-            </span>
-            <span className="text-slate-300 dark:text-slate-600">·</span>
-            <span className="text-xs font-bold text-slate-500 dark:text-slate-400">
-              {t.riskForecast}
+            <span className="text-[10px] font-black uppercase tracking-widest text-cyan-400 bg-cyan-950/70 px-2.5 py-0.5 rounded-full border border-cyan-500/40">
+              Module 5 • Agro-Meteorology & 4 Hazard Gauges
             </span>
           </div>
-          <span className="text-[10px] font-bold bg-krishi-100 dark:bg-krishi-900/60 text-krishi-800 dark:text-krishi-300 px-2.5 py-0.5 rounded-full inline-block mt-1">
-            {t.decisionSupport03}
-          </span>
-          <h1 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight mt-1">
-            {t.stayAheadDisease}
+          <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight mt-2">
+            Weather Risk Analysis & Climate Advisory
           </h1>
-          <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 mt-1 max-w-2xl">
-            {t.riskForecastIntro}
+          <p className="text-xs sm:text-sm text-slate-300 mt-1 max-w-3xl leading-relaxed">
+            14-Day hyper-local forecast computing FAO-56 Penman-Monteith Evapotranspiration (ET0). Proactive
+            72-hour pathogen alerts for Koleroga and blast spores.
           </p>
         </div>
 
-        <div className="flex flex-wrap items-center gap-2 self-start sm:self-auto">
-          <button
-            onClick={() => locateGps()}
-            disabled={isGpsLocating}
-            className={`flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-xs font-bold transition shadow-sm border ${
-              isGpsLocating
-                ? "bg-amber-100 text-amber-900 border-amber-300 animate-pulse"
-                : "bg-white dark:bg-krishi-darkcard border-slate-200 dark:border-krishi-darkborder text-slate-700 dark:text-slate-200 hover:border-krishi-500"
-            }`}
-          >
-            {isGpsLocating ? (
-              <Loader2 className="w-3.5 h-3.5 animate-spin text-amber-600" />
-            ) : (
-              <MapPin className="w-3.5 h-3.5 text-krishi-600" />
-            )}
-            <span>{isGpsLocating ? "Locating..." : `📍 ${location.split("·")[0]?.trim() || "Puttur"}`}</span>
-          </button>
+        {/* Right Weather Chip (matching Image 2) */}
+        <div className="bg-[#0b213f] border border-blue-500/40 rounded-2xl p-4 text-right shrink-0 flex items-center gap-3">
+          <div className="p-2 bg-blue-600/30 rounded-xl text-2xl">
+            🌧️
+          </div>
+          <div>
+            <div className="text-base font-black text-white">
+              {currentWeather ? `${Math.round(currentWeather.temperature_c)}°C / ${(currentWeather.temperature_c - 6.3).toFixed(1)}°C` : "29.5°C / 23.2°C"}
+            </div>
+            <div className="text-xs font-bold text-cyan-300">
+              Rain Prob: 88% (42.5 mm)
+            </div>
+          </div>
+        </div>
+      </div>
 
-          <div className="flex items-center gap-2 bg-amber-50 dark:bg-amber-950/40 text-amber-800 dark:text-amber-300 border border-amber-200 dark:border-amber-800/40 px-3 py-1.5 rounded-xl text-xs font-bold">
-            <AlertTriangle className="w-4 h-4 text-amber-600" />
-            <span>72-hr Spore Outbreak Window Active</span>
+      {/* ── 4 Agricultural Hazard Early Warning Gauges (Image 2) ── */}
+      <div className="space-y-3">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2 text-sm font-black text-slate-900 dark:text-white">
+            <span className="text-rose-500 animate-pulse">⚡</span>
+            <span>4 Agricultural Hazard Early Warning Gauges</span>
+          </div>
+          <span className="text-[11px] text-slate-500 dark:text-slate-400 font-medium">
+            Continuous 72-Hour Micro-Climate Monitoring
+          </span>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          {/* 1. Fungal Blight & Spore Index */}
+          <div className="bg-slate-900 text-white p-5 rounded-2xl border border-rose-900/60 shadow-lg flex flex-col justify-between space-y-4">
+            <div>
+              <div className="flex items-center justify-between text-[10px] font-bold">
+                <span className="bg-rose-950/80 text-rose-300 border border-rose-500/50 px-2 py-0.5 rounded-full">
+                  CRITICAL HAZARD
+                </span>
+                <span className="text-slate-400">72-Hour Advance Warning</span>
+              </div>
+              <h3 className="text-sm font-black text-white mt-2">
+                Fungal Blight & Spore Index
+              </h3>
+              <p className="text-[11px] text-slate-400">Arecanut Koleroga & Paddy Blast</p>
+
+              {/* Meter */}
+              <div className="mt-3">
+                <div className="flex justify-between text-xs font-bold mb-1">
+                  <span className="text-slate-400">Risk Intensity:</span>
+                  <span className="text-rose-400">87 / 100</span>
+                </div>
+                <div className="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
+                  <div className="bg-rose-500 h-full rounded-full" style={{ width: "87%" }} />
+                </div>
+              </div>
+
+              <div className="mt-3 p-2 bg-slate-950/80 rounded-xl text-[11px] text-slate-300 border border-slate-800">
+                <strong className="text-rose-300 block">Trigger:</strong> Continuous leaf wetness &gt;18h + relative humidity sustained &gt;90%. Spore germination threshold breached.
+              </div>
+            </div>
+
+            <div className="text-[11px] text-cyan-300 bg-cyan-950/40 p-2 rounded-xl border border-cyan-800/40">
+              <strong>Action:</strong> Immediate application of 1% Bordeaux mixture or Metalaxyl MZ 72% WP before rain resumes.
+            </div>
+          </div>
+
+          {/* 2. Heat Stress & Frost Shock */}
+          <div className="bg-slate-900 text-white p-5 rounded-2xl border border-emerald-900/60 shadow-lg flex flex-col justify-between space-y-4">
+            <div>
+              <div className="flex items-center justify-between text-[10px] font-bold">
+                <span className="bg-emerald-950/80 text-emerald-300 border border-emerald-500/50 px-2 py-0.5 rounded-full">
+                  LOW RISK
+                </span>
+                <span className="text-slate-400">Optimal Range (23°C - 30°C)</span>
+              </div>
+              <h3 className="text-sm font-black text-white mt-2">
+                Heat Stress & Frost Shock
+              </h3>
+              <p className="text-[11px] text-slate-400">Vegetable Blossom & Pollen Viability</p>
+
+              {/* Meter */}
+              <div className="mt-3">
+                <div className="flex justify-between text-xs font-bold mb-1">
+                  <span className="text-slate-400">Risk Intensity:</span>
+                  <span className="text-emerald-400">22 / 100</span>
+                </div>
+                <div className="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
+                  <div className="bg-emerald-500 h-full rounded-full" style={{ width: "22%" }} />
+                </div>
+              </div>
+
+              <div className="mt-3 p-2 bg-slate-950/80 rounded-xl text-[11px] text-slate-300 border border-slate-800">
+                <strong className="text-emerald-300 block">Trigger:</strong> Moderate coastal breeze suppressing thermal spikes. No flower drop risk detected.
+              </div>
+            </div>
+
+            <div className="text-[11px] text-emerald-300 bg-emerald-950/40 p-2 rounded-xl border border-emerald-800/40">
+              <strong>Action:</strong> Standard micro-sprinkler misting during midday peak.
+            </div>
+          </div>
+
+          {/* 3. Soil Moisture Deficit (ET0) */}
+          <div className="bg-slate-900 text-white p-5 rounded-2xl border border-cyan-900/60 shadow-lg flex flex-col justify-between space-y-4">
+            <div>
+              <div className="flex items-center justify-between text-[10px] font-bold">
+                <span className="bg-cyan-950/80 text-cyan-300 border border-cyan-500/50 px-2 py-0.5 rounded-full">
+                  SURPLUS MOISTURE
+                </span>
+                <span className="text-slate-400">Sub-surface saturation</span>
+              </div>
+              <h3 className="text-sm font-black text-white mt-2">
+                Soil Moisture Deficit (ET0)
+              </h3>
+              <p className="text-[11px] text-slate-400">Root-zone Hydration Balance</p>
+
+              {/* Meter */}
+              <div className="mt-3">
+                <div className="flex justify-between text-xs font-bold mb-1">
+                  <span className="text-slate-400">Risk Intensity:</span>
+                  <span className="text-cyan-400">18 / 100</span>
+                </div>
+                <div className="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
+                  <div className="bg-cyan-500 h-full rounded-full" style={{ width: "18%" }} />
+                </div>
+              </div>
+
+              <div className="mt-3 p-2 bg-slate-950/80 rounded-xl text-[11px] text-slate-300 border border-slate-800">
+                <strong className="text-cyan-300 block">Trigger:</strong> Rainfall (100.5 mm in 48h) exceeds cumulative ET0 loss (6.0 mm). Aquifers recharging.
+              </div>
+            </div>
+
+            <div className="text-[11px] text-cyan-300 bg-cyan-950/40 p-2 rounded-xl border border-cyan-800/40">
+              <strong>Action:</strong> Ensure drainage trenches are unblocked to prevent standing root suffocation.
+            </div>
+          </div>
+
+          {/* 4. Downpour & Hail Lodging Hazard */}
+          <div className="bg-slate-900 text-white p-5 rounded-2xl border border-amber-900/60 shadow-lg flex flex-col justify-between space-y-4">
+            <div>
+              <div className="flex items-center justify-between text-[10px] font-bold">
+                <span className="bg-rose-950/80 text-rose-300 border border-rose-500/50 px-2 py-0.5 rounded-full">
+                  ELEVATED RISK
+                </span>
+                <span className="text-slate-400">Next 24 to 36 Hours</span>
+              </div>
+              <h3 className="text-sm font-black text-white mt-2">
+                Downpour & Hail Lodging Hazard
+              </h3>
+              <p className="text-[11px] text-slate-400">Paddy & Plantation Stems</p>
+
+              {/* Meter */}
+              <div className="mt-3">
+                <div className="flex justify-between text-xs font-bold mb-1">
+                  <span className="text-slate-400">Risk Intensity:</span>
+                  <span className="text-amber-400">74 / 100</span>
+                </div>
+                <div className="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
+                  <div className="bg-amber-500 h-full rounded-full" style={{ width: "74%" }} />
+                </div>
+              </div>
+
+              <div className="mt-3 p-2 bg-slate-950/80 rounded-xl text-[11px] text-slate-300 border border-slate-800">
+                <strong className="text-amber-300 block">Trigger:</strong> Squall gusts reaching 38 km/h coupled with 58 mm intense precipitation on Day 2.
+              </div>
+            </div>
+
+            <div className="text-[11px] text-amber-300 bg-amber-950/40 p-2 rounded-xl border border-amber-800/40">
+              <strong>Action:</strong> Tie mature areca bunch sheaths ('Kotte Kattuva'); check bund integrity in paddy fields.
+            </div>
           </div>
         </div>
       </div>

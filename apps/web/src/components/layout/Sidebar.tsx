@@ -14,6 +14,7 @@ import {
   Sparkles,
   ChevronRight,
   ShieldCheck,
+  MapPin,
 } from "lucide-react";
 import { useFarmStore, ActiveTab } from "@/stores/useFarmStore";
 import { useTranslation } from "@/lib/i18n/translations";
@@ -34,6 +35,7 @@ export const Sidebar: React.FC = () => {
 
   const navItems: { id: ActiveTab; label: string; icon: React.ElementType; badge?: string }[] = [
     { id: "overview", label: t.overview, icon: LayoutDashboard },
+    { id: "gis-field-map", label: language === "kn" ? "ಜಿಐಎಸ್ ನಕ್ಷೆ" : "GIS & Field Map", icon: MapPin, badge: "GIS" },
     { id: "crop-guide", label: t.cropGuide, icon: Sprout, badge: "01" },
     { id: "leaf-scan", label: t.leafScan, icon: ScanLine, badge: "02" },
     { id: "risk-forecast", label: t.riskForecast, icon: CloudRain, badge: "03" },

@@ -8,6 +8,7 @@ export type ActiveTab =
   | "crop-guide"
   | "leaf-scan"
   | "risk-forecast"
+  | "gis-field-map"
   | "ndvi"
   | "yield"
   | "market"

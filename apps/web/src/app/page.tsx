@@ -13,6 +13,7 @@ import { YieldEstimateView } from "@/components/views/YieldEstimateView";
 import { MarketPricesView } from "@/components/views/MarketPricesView";
 import { SeedBazaarView } from "@/components/views/SeedBazaarView";
 import { AiotLabView } from "@/components/views/AiotLabView";
+import { GisFieldMapView } from "@/components/views/GisFieldMapView";
 import { LandingPageView } from "@/components/views/LandingPageView";
 import { SignInView } from "@/components/views/SignInView";
 import { AdminDashboardView } from "@/components/views/AdminDashboardView";
@@ -85,6 +86,7 @@ export default function AppHome() {
         {/* Dynamic Main Workspace Content */}
         <main className="flex-1 min-w-0 p-4 sm:p-6 lg:p-8 overflow-y-auto">
           {activeTab === "overview" && <OverviewView />}
+          {activeTab === "gis-field-map" && <GisFieldMapView />}
           {activeTab === "crop-guide" && <CropGuideView />}
           {activeTab === "leaf-scan" && <LeafScanView />}
           {activeTab === "risk-forecast" && <RiskForecastView />}
