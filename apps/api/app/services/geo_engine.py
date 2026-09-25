@@ -119,7 +119,7 @@ class GeoEngine:
             f"depth=15-30cm&value=mean&value=uncertainty"
         )
         try:
-            async with httpx.AsyncClient(timeout=4.0) as client:
+            async with httpx.AsyncClient(timeout=2.0) as client:
                 res = await client.get(url)
                 if res.status_code == 200:
                     data = res.json()
