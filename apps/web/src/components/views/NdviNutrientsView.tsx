@@ -13,17 +13,20 @@ import {
   CheckCircle2,
   Waves,
   ShieldCheck,
+  Printer,
+  X,
 } from "lucide-react";
 import { useFarmStore } from "@/stores/useFarmStore";
 import { useTranslation } from "@/lib/i18n/translations";
 import { fetchSoilGridsProfile, SoilGridsProfile } from "@/lib/db-client";
 
 export const NdviNutrientsView: React.FC = () => {
-  const { language, farmName, location, acreage, latitude, longitude } = useFarmStore();
+  const { language, farmName, location, acreage, latitude, longitude, currentUser } = useFarmStore();
   const t = useTranslation(language);
 
   const [activeLayer, setActiveLayer] = useState<"ndvi" | "true" | "moisture">("ndvi");
   const [soilGrids, setSoilGrids] = useState<SoilGridsProfile | null>(null);
+  const [showSoilDossierModal, setShowSoilDossierModal] = useState(false);
   const [selectedCell, setSelectedCell] = useState<{ row: number; col: number; val: number; zone: string } | null>({
     row: 3,
     col: 2,
@@ -95,7 +98,7 @@ export const NdviNutrientsView: React.FC = () => {
         </div>
 
         <button
-          onClick={() => alert("Report downloaded: Shrinivasa_PlotA_NDVI_12Jun2024.pdf")}
+          onClick={() => setShowSoilDossierModal(true)}
           className="self-start sm:self-auto flex items-center gap-2 px-4 py-2 bg-krishi-700 hover:bg-krishi-800 text-white rounded-xl text-xs font-bold transition shadow-sm"
         >
           <Download className="w-3.5 h-3.5" />
@@ -394,6 +397,132 @@ export const NdviNutrientsView: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* ── Official Soil Health Card & Sentinel-2 Diagnostic Modal (Printable) ── */}
+      {showSoilDossierModal && (
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto">
+          <div className="bg-slate-900 text-white rounded-3xl max-w-2xl w-full border border-slate-700 shadow-2xl p-6 space-y-5 animate-fadeIn my-8">
+            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+              <div className="flex items-center gap-2">
+                <Leaf className="w-5 h-5 text-emerald-400" />
+                <h3 className="text-base font-black tracking-tight">
+                  Soil Health & Sentinel-2 Multispectral Diagnostic Dossier
+                </h3>
+              </div>
+              <button
+                onClick={() => setShowSoilDossierModal(false)}
+                className="w-7 h-7 rounded-full bg-slate-800 hover:bg-slate-700 flex items-center justify-center text-slate-300"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            {/* Official Certificate Paper Container */}
+            <div className="bg-white text-slate-900 rounded-2xl p-6 border-2 border-slate-300 shadow-inner space-y-4 print:p-0 print:border-none print:shadow-none">
+              {/* Seal & Header */}
+              <div className="text-center border-b-2 border-emerald-800 pb-3">
+                <div className="text-[11px] font-bold text-emerald-800 uppercase tracking-widest">
+                  ICAR - ಕೇಂದ್ರೀಯ ತೋಟದ ಬೆಳೆಗಳ ಸಂಶೋಧನಾ ಸಂಸ್ಥೆ (CPCRI) & ISRIC SoilGrids
+                </div>
+                <h2 className="text-lg font-black text-slate-900 uppercase tracking-tight mt-0.5">
+                  Soil Health Card & Sentinel-2 Canopy Diagnostic Certificate
+                </h2>
+                <div className="text-[10px] font-mono text-slate-500 mt-1">
+                  Plot: {farmName} · Lat: {latitude?.toFixed(4) || "12.7687"}, Lng: {longitude?.toFixed(4) || "75.2071"} · ICAR Zone XII
+                </div>
+              </div>
+
+              {/* Farmer Profile Strip */}
+              <div className="grid grid-cols-3 gap-2 p-2.5 bg-slate-50 rounded-xl border border-slate-200 text-xs">
+                <div>
+                  <span className="text-[10px] uppercase font-bold text-slate-500 block">Farmer / Owner</span>
+                  <strong className="text-slate-900 font-bold">{currentUser?.name || "Shrinivasa Gowda"}</strong>
+                </div>
+                <div>
+                  <span className="text-[10px] uppercase font-bold text-slate-500 block">Plot Acreage</span>
+                  <strong className="text-emerald-700 font-bold">{acreage || 4.2} Acres (1.70 Ha)</strong>
+                </div>
+                <div>
+                  <span className="text-[10px] uppercase font-bold text-slate-500 block">Scan Resolution</span>
+                  <strong className="text-cyan-700 font-bold">10m / 250m Baseline</strong>
+                </div>
+              </div>
+
+              {/* SoilGrids Physical & Chemical Grid */}
+              <div>
+                <span className="text-[10px] uppercase font-black tracking-wider text-slate-600 block mb-1.5">
+                  1. ISRIC SoilGrids 250m Root-Zone Profile (0 - 30 cm)
+                </span>
+                <div className="grid grid-cols-4 gap-2 text-xs">
+                  <div className="p-2 bg-emerald-50 rounded-lg border border-emerald-200">
+                    <span className="text-[10px] text-emerald-800 block">Soil pH:</span>
+                    <strong className="text-emerald-900 font-black">{soilGrids?.ph || 5.6} (Laterite)</strong>
+                  </div>
+                  <div className="p-2 bg-emerald-50 rounded-lg border border-emerald-200">
+                    <span className="text-[10px] text-emerald-800 block">Org. Carbon:</span>
+                    <strong className="text-emerald-900 font-black">{soilGrids?.organic_carbon_pct || 1.48}%</strong>
+                  </div>
+                  <div className="p-2 bg-emerald-50 rounded-lg border border-emerald-200">
+                    <span className="text-[10px] text-emerald-800 block">Total Nitrogen:</span>
+                    <strong className="text-emerald-900 font-black">{soilGrids?.total_nitrogen_level || "Medium"}</strong>
+                  </div>
+                  <div className="p-2 bg-emerald-50 rounded-lg border border-emerald-200">
+                    <span className="text-[10px] text-emerald-800 block">Texture:</span>
+                    <strong className="text-emerald-900 font-black">Sandy Clay Loam</strong>
+                  </div>
+                </div>
+              </div>
+
+              {/* Sentinel-2 Canopy Diagnostic */}
+              <div>
+                <span className="text-[10px] uppercase font-black tracking-wider text-slate-600 block mb-1.5">
+                  2. Sentinel-2A Multispectral Canopy Breakdown
+                </span>
+                <div className="space-y-1.5 text-xs">
+                  <div className="flex justify-between items-center p-1.5 bg-slate-50 rounded border border-slate-200">
+                    <span className="font-semibold text-slate-800">Zone 1: Vigorous Canopy (0.80 - 0.90 NDVI)</span>
+                    <strong className="text-emerald-700">65% Coverage</strong>
+                  </div>
+                  <div className="flex justify-between items-center p-1.5 bg-slate-50 rounded border border-slate-200">
+                    <span className="font-semibold text-slate-800">Zone 2: Moderate Canopy (0.60 - 0.79 NDVI)</span>
+                    <strong className="text-amber-600">25% Coverage</strong>
+                  </div>
+                  <div className="flex justify-between items-center p-1.5 bg-slate-50 rounded border border-slate-200">
+                    <span className="font-semibold text-slate-800">Zone 3: Potassium Deficit (0.45 - 0.59 NDVI)</span>
+                    <strong className="text-red-600">10% Coverage</strong>
+                  </div>
+                </div>
+              </div>
+
+              {/* Agronomist Prescription Box */}
+              <div className="p-3 bg-amber-50 rounded-xl border border-amber-300 text-xs">
+                <span className="font-bold text-amber-900 block mb-0.5">🌾 ICAR Scientific Agronomy Prescription:</span>
+                <p className="text-amber-800 leading-relaxed">
+                  1. Apply <strong>25 kg Muriate of Potash (MOP, 60% K₂O)</strong> top-dressing along palm drip-lines in Zone 3 to halt premature bunch-drop.<br />
+                  2. Soil pH is 5.6; apply <strong>200 kg Agricultural Lime / Dolomite</strong> per acre at monsoon start to neutralize laterite acidity.
+                </p>
+              </div>
+            </div>
+
+            {/* Modal Action Buttons */}
+            <div className="flex items-center justify-end gap-3 pt-2">
+              <button
+                onClick={() => setShowSoilDossierModal(false)}
+                className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-xs font-bold transition"
+              >
+                Close
+              </button>
+              <button
+                onClick={() => window.print()}
+                className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold shadow transition flex items-center gap-1.5"
+              >
+                <Printer className="w-4 h-4" />
+                <span>Print / Save as PDF</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

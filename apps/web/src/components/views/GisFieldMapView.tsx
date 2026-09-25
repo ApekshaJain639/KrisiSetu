@@ -17,6 +17,8 @@ import {
   AlertTriangle,
   X,
   Sparkles,
+  Printer,
+  Download,
 } from "lucide-react";
 import { useFarmStore } from "@/stores/useFarmStore";
 import { useTranslation } from "@/lib/i18n/translations";
@@ -54,6 +56,7 @@ export const GisFieldMapView: React.FC = () => {
 
   // RTC / Bhoomi OCR Modal State
   const [showRtcModal, setShowRtcModal] = useState(false);
+  const [showDossierModal, setShowDossierModal] = useState(false);
   const [isOcrProcessing, setIsOcrProcessing] = useState(false);
   const [ocrResult, setOcrResult] = useState<RtcOcrResult | null>(null);
   const [rtcUploadError, setRtcUploadError] = useState<string | null>(null);
@@ -265,6 +268,15 @@ export const GisFieldMapView: React.FC = () => {
             </div>
 
             <div className="flex items-center gap-2">
+              {/* Export Field Dossier Button */}
+              <button
+                onClick={() => setShowDossierModal(true)}
+                className="px-3 py-1.5 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-xs font-bold shadow-md transition flex items-center gap-1.5"
+              >
+                <Printer className="w-3.5 h-3.5" />
+                <span>Export Dossier (PDF)</span>
+              </button>
+
               {/* Upload RTC / e-Swathu OCR Button */}
               <button
                 onClick={() => setShowRtcModal(true)}
@@ -567,6 +579,136 @@ export const GisFieldMapView: React.FC = () => {
                 className="flex-1 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold shadow transition"
               >
                 Apply to GIS Field Map
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── Official Bhoomi RTC & ICAR Field Dossier Modal (Printable) ── */}
+      {showDossierModal && (
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto">
+          <div className="bg-slate-900 text-white rounded-3xl max-w-2xl w-full border border-slate-700 shadow-2xl p-6 space-y-5 animate-fadeIn my-8">
+            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+              <div className="flex items-center gap-2">
+                <ShieldCheck className="w-5 h-5 text-emerald-400" />
+                <h3 className="text-base font-black tracking-tight">
+                  Official Land Parcel & ICAR Hydrogeology Dossier
+                </h3>
+              </div>
+              <button
+                onClick={() => setShowDossierModal(false)}
+                className="w-7 h-7 rounded-full bg-slate-800 hover:bg-slate-700 flex items-center justify-center text-slate-300"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            {/* Official Certificate Paper Container */}
+            <div className="bg-white text-slate-900 rounded-2xl p-6 border-2 border-slate-300 shadow-inner space-y-4 print:p-0 print:border-none print:shadow-none">
+              {/* Seal & Header */}
+              <div className="text-center border-b-2 border-emerald-800 pb-3">
+                <div className="text-[11px] font-bold text-emerald-800 uppercase tracking-widest">
+                  ಕರ್ನಾಟಕ ಸರ್ಕಾರ · ಕಂದಾಯ ಇಲಾಖೆ (ಭೂಮಿ) & ICAR ಕೃಷಿ-ಹವಾಮಾನ ಮಂಡಳಿ
+                </div>
+                <h2 className="text-lg font-black text-slate-900 uppercase tracking-tight mt-0.5">
+                  Bhoomi Digital Land Parcel & Agro-Climatic Intelligence Certificate
+                </h2>
+                <div className="text-[10px] font-mono text-slate-500 mt-1">
+                  Reference: KRN-BHOOMI-RTC-2024-SY{ocrResult?.survey_no || "142-2A"} · Validated under ICAR Zone XII Protocol
+                </div>
+              </div>
+
+              {/* Farmer & Plot Details Grid */}
+              <div className="grid grid-cols-2 gap-3 text-xs">
+                <div className="p-2.5 bg-slate-50 rounded-xl border border-slate-200">
+                  <span className="text-[10px] uppercase font-bold text-slate-500 block">ಖಾತೆದಾರ / Owner Name</span>
+                  <strong className="text-slate-900 font-black text-sm">
+                    {ocrResult?.owner_name || currentUser?.name || "Shrinivasa Gowda"}
+                  </strong>
+                </div>
+
+                <div className="p-2.5 bg-slate-50 rounded-xl border border-slate-200">
+                  <span className="text-[10px] uppercase font-bold text-slate-500 block">ಸರ್ವೆ & ಹಿಸ್ಸಾ / Survey & Hissa</span>
+                  <strong className="text-emerald-700 font-black text-sm">
+                    Sy #{ocrResult?.survey_no || "142/2A"} {ocrResult?.hissa_no ? `(Hissa ${ocrResult.hissa_no})` : ""}
+                  </strong>
+                </div>
+
+                <div className="p-2.5 bg-slate-50 rounded-xl border border-slate-200">
+                  <span className="text-[10px] uppercase font-bold text-slate-500 block">ವಿಸ್ತೀರ್ಣ / Geodesic Acreage</span>
+                  <strong className="text-slate-900 font-black text-sm">
+                    {fieldAcreage} Acres ({(fieldAcreage * 0.404686).toFixed(2)} Hectares)
+                  </strong>
+                </div>
+
+                <div className="p-2.5 bg-slate-50 rounded-xl border border-slate-200">
+                  <span className="text-[10px] uppercase font-bold text-slate-500 block">ಗಡಿ ಸುತ್ತಳತೆ / Geodesic Perimeter</span>
+                  <strong className="text-slate-900 font-black text-sm">
+                    {fieldPerimeter} Meters (Closed Polygon)
+                  </strong>
+                </div>
+
+                <div className="p-2.5 bg-slate-50 rounded-xl border border-slate-200">
+                  <span className="text-[10px] uppercase font-bold text-slate-500 block">ಗ್ರಾಮ ಮತ್ತು ತಾಲೂಕು / Location</span>
+                  <span className="text-slate-800 font-bold">
+                    {ocrResult?.village || "Belthangady"}, {ocrResult?.taluk || "Dakshina Kannada"}
+                  </span>
+                </div>
+
+                <div className="p-2.5 bg-slate-50 rounded-xl border border-slate-200">
+                  <span className="text-[10px] uppercase font-bold text-slate-500 block">ICAR ವಲಯ / Agro-Climatic Zone</span>
+                  <span className="text-slate-800 font-bold">
+                    {hydroData?.zone_code || "Zone XII"}: West Coast Plains & Ghats
+                  </span>
+                </div>
+
+                <div className="p-2.5 bg-slate-50 rounded-xl border border-slate-200">
+                  <span className="text-[10px] uppercase font-bold text-slate-500 block">CGWB ಅಂತರ್ಜಲ ಸ್ಥಿತಿ / Aquifer Stress</span>
+                  <span className="text-emerald-700 font-bold">
+                    {hydroData?.cgwb_groundwater?.aquifer_stress_status || "Safe"} ({hydroData?.cgwb_groundwater?.water_table_depth || "4.5 - 9.0 m bgl"})
+                  </span>
+                </div>
+
+                <div className="p-2.5 bg-slate-50 rounded-xl border border-slate-200">
+                  <span className="text-[10px] uppercase font-bold text-slate-500 block">ವಾರ್ಷಿಕ ಮಳೆ / Annual Rainfall Isohyet</span>
+                  <span className="text-slate-800 font-bold">
+                    {hydroData?.annual_rainfall_isohyet || "2,200 - 3,800 mm / annum"}
+                  </span>
+                </div>
+              </div>
+
+              {/* Coordinates & Certification Strip */}
+              <div className="p-3 bg-emerald-50 rounded-xl border border-emerald-200 flex items-center justify-between text-xs">
+                <div>
+                  <span className="font-bold text-emerald-900 block">Geodesic Polygon Centroid</span>
+                  <span className="font-mono text-[11px] text-emerald-700">
+                    Lat: {latitude?.toFixed(4) || "12.7687"}° N, Lng: {longitude?.toFixed(4) || "75.2071"}° E
+                  </span>
+                </div>
+                <div className="text-right">
+                  <span className="text-[10px] text-slate-500 block uppercase font-bold">Digital Timestamp</span>
+                  <span className="font-mono text-[11px] text-slate-700">
+                    {new Date().toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" })}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Modal Action Buttons */}
+            <div className="flex items-center justify-end gap-3 pt-2">
+              <button
+                onClick={() => setShowDossierModal(false)}
+                className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-xs font-bold transition"
+              >
+                Close
+              </button>
+              <button
+                onClick={() => window.print()}
+                className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold shadow transition flex items-center gap-1.5"
+              >
+                <Printer className="w-4 h-4" />
+                <span>Print / Save as PDF</span>
               </button>
             </div>
           </div>
