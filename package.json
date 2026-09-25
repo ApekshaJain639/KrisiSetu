@@ -1,0 +1,12 @@
+{
+  "name": "krisisetu-root",
+  "version": "1.0.0",
+  "private": true,
+  "description": "KrishiSetu - Unified Agricultural Platform for Smallholders",
+  "scripts": {
+    "dev": "npm --prefix apps/web run dev:all",
+    "dev:all": "npm --prefix apps/web run dev:all",
+    "dev:web": "npm --prefix apps/web run dev",
+    "build:web": "npm --prefix apps/web run build"
+  }
+}

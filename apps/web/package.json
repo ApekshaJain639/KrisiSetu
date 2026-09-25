@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "dev:all": "concurrently -n \"BACKEND,FRONTEND\" -c \"cyan.bold,green.bold\" \"python -m uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload --app-dir ../api\" \"next dev\"",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"
@@ -25,6 +26,7 @@
     "@types/react": "^18.3.2",
     "@types/react-dom": "^18.3.0",
     "autoprefixer": "^10.6.1",
+    "concurrently": "^10.0.5",
     "eslint": "^8.57.0",
     "eslint-config-next": "14.2.3",
     "postcss": "^8.4.38",
