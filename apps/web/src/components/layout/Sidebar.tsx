@@ -29,6 +29,7 @@ export const Sidebar: React.FC = () => {
     setActiveTab,
     copilotOpen,
     setCopilotOpen,
+    setViewMode,
   } = useFarmStore();
 
   const t = useTranslation(language);
@@ -123,8 +124,19 @@ export const Sidebar: React.FC = () => {
         })}
       </nav>
 
-      {/* Bottom Voice Copilot Shortcut */}
-      <div className="p-3 border-t border-[#1b4a2e]">
+      {/* Bottom Shortcuts */}
+      <div className="p-3 border-t border-[#1b4a2e] space-y-2">
+        <button
+          onClick={() => setViewMode("admin")}
+          className="w-full bg-[#143a23] hover:bg-[#1a4a2d] border border-[#235838] p-2 rounded-xl flex items-center justify-between text-left text-xs font-semibold text-emerald-200 transition"
+        >
+          <div className="flex items-center gap-2">
+            <ShieldCheck className="w-4 h-4 text-emerald-400" />
+            <span>Developer / Admin Console</span>
+          </div>
+          <ChevronRight className="w-3.5 h-3.5 text-emerald-400" />
+        </button>
+
         <button
           onClick={() => setCopilotOpen(!copilotOpen)}
           className="w-full bg-gradient-to-r from-emerald-600/40 to-emerald-500/20 hover:from-emerald-600/60 hover:to-emerald-500/40 border border-emerald-500/30 p-2.5 rounded-xl flex items-center justify-between text-left transition-all group"
