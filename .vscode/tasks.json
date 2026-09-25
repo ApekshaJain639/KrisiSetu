@@ -1,0 +1,44 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Run FastAPI Backend",
+      "type": "shell",
+      "command": "python -X utf8 -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8000",
+      "options": {
+        "cwd": "${workspaceFolder}/apps/api"
+      },
+      "isBackground": true,
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "group": "backend"
+      }
+    },
+    {
+      "label": "Run Next.js Frontend",
+      "type": "shell",
+      "command": "npm run dev",
+      "options": {
+        "cwd": "${workspaceFolder}/apps/web"
+      },
+      "isBackground": true,
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "group": "frontend"
+      }
+    },
+    {
+      "label": "🚀 Run Both (Backend + Frontend)",
+      "dependsOn": [
+        "Run FastAPI Backend",
+        "Run Next.js Frontend"
+      ],
+      "dependsOrder": "parallel",
+      "problemMatcher": []
+    }
+  ]
+}

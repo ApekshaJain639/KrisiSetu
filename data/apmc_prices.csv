@@ -1,0 +1,31 @@
+arrival_date,state,district,market,commodity,variety,min_price,max_price,modal_price,arrivals_tonnes
+2026-09-01,Karnataka,Dakshina Kannada,Puttur,Arecanut,Chali,47500.00,50500.00,49000.00,32.5
+2026-09-01,Karnataka,Dakshina Kannada,Mangaluru,Arecanut,Chali,48000.00,51000.00,49500.00,28.0
+2026-09-01,Karnataka,Shivamogga,Shivamogga,Arecanut,Bette,52000.00,55500.00,53800.00,65.0
+2026-09-01,Karnataka,Uttara Kannada,Sirsi,Arecanut,Chali,49000.00,52500.00,51200.00,45.0
+2026-09-05,Karnataka,Dakshina Kannada,Puttur,Arecanut,Chali,48200.00,51200.00,49800.00,36.0
+2026-09-05,Karnataka,Dakshina Kannada,Mangaluru,Arecanut,Chali,48500.00,51500.00,50100.00,30.5
+2026-09-05,Karnataka,Shivamogga,Shivamogga,Arecanut,Bette,52500.00,56000.00,54200.00,72.0
+2026-09-05,Karnataka,Uttara Kannada,Sirsi,Arecanut,Chali,49500.00,53000.00,51600.00,48.0
+2026-09-10,Karnataka,Dakshina Kannada,Puttur,Arecanut,Chali,48500.00,51800.00,50200.00,38.0
+2026-09-10,Karnataka,Dakshina Kannada,Mangaluru,Arecanut,Chali,49000.00,52000.00,50500.00,34.0
+2026-09-10,Karnataka,Shivamogga,Shivamogga,Arecanut,Bette,53000.00,56500.00,54800.00,68.0
+2026-09-10,Karnataka,Uttara Kannada,Sirsi,Arecanut,Chali,50000.00,53400.00,52000.00,51.0
+2026-09-15,Karnataka,Dakshina Kannada,Puttur,Arecanut,Chali,48800.00,52000.00,50500.00,42.0
+2026-09-15,Karnataka,Dakshina Kannada,Mangaluru,Arecanut,Chali,49200.00,52400.00,50900.00,39.0
+2026-09-15,Karnataka,Shivamogga,Shivamogga,Arecanut,Bette,53500.00,57000.00,55400.00,80.0
+2026-09-15,Karnataka,Uttara Kannada,Sirsi,Arecanut,Chali,50500.00,53800.00,52400.00,55.0
+2026-09-20,Karnataka,Dakshina Kannada,Puttur,Arecanut,Chali,49000.00,52200.00,50800.00,40.0
+2026-09-20,Karnataka,Dakshina Kannada,Mangaluru,Arecanut,Chali,49500.00,52800.00,51200.00,35.0
+2026-09-20,Karnataka,Shivamogga,Shivamogga,Arecanut,Bette,54000.00,57500.00,55900.00,85.0
+2026-09-20,Karnataka,Uttara Kannada,Sirsi,Arecanut,Chali,51000.00,54200.00,52800.00,52.0
+2026-09-21,Karnataka,Dakshina Kannada,Puttur,Arecanut,Chali,49200.00,52500.00,51000.00,41.0
+2026-09-21,Karnataka,Dakshina Kannada,Mangaluru,Arecanut,Chali,49800.00,53000.00,51500.00,37.0
+2026-09-21,Karnataka,Shivamogga,Shivamogga,Arecanut,Bette,54200.00,57800.00,56200.00,88.0
+2026-09-21,Karnataka,Uttara Kannada,Sirsi,Arecanut,Chali,51200.00,54500.00,53000.00,54.0
+2026-09-21,Karnataka,Dakshina Kannada,Puttur,Black Pepper,Graded,59000.00,63500.00,61500.00,12.0
+2026-09-21,Karnataka,Shivamogga,Shivamogga,Black Pepper,Graded,61000.00,65000.00,63200.00,18.5
+2026-09-21,Karnataka,Dakshina Kannada,Mangaluru,Paddy (Dhan),Common,2200.00,2400.00,2320.00,110.0
+2026-09-21,Karnataka,Shivamogga,Shivamogga,Paddy (Dhan),Fine,2350.00,2600.00,2480.00,240.0
+2026-09-21,Karnataka,Dakshina Kannada,Puttur,Coconut,Fresh Large,3200.00,3800.00,3550.00,60.0
+2026-09-21,Karnataka,Gadag,Gadag,Cotton,Bunny,6800.00,7400.00,7150.00,150.0

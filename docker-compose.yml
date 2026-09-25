@@ -1,0 +1,25 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgis/postgis:16-3.4
+    container_name: krisisetu-db
+    restart: always
+    environment:
+      POSTGRES_USER: krisisetu_admin
+      POSTGRES_PASSWORD: secret_password
+      POSTGRES_DB: krisisetu_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  redis:
+    image: redis:7-alpine
+    container_name: krisisetu-redis
+    restart: always
+    ports:
+      - "6379:6379"
+
+volumes:
+  pgdata:

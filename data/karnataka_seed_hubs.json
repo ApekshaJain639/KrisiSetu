@@ -1,0 +1,93 @@
+[
+  {
+    "id": "hub-001",
+    "name": "Raitha Samparka Kendra (RSK) Belthangady",
+    "hub_type": "RSK",
+    "latitude": 13.0032,
+    "longitude": 75.2954,
+    "district": "Dakshina Kannada",
+    "taluk": "Belthangady",
+    "contact_phone": "08256-232120",
+    "inventory": [
+      {
+        "crop": "Arecanut",
+        "variety": "Mangala Selection",
+        "sathi_lot_number": "KA-2024-SATHI-8819",
+        "tag": "Blue (Certified)",
+        "germination_pct": 94.0,
+        "purity_pct": 99.0,
+        "mrp_inr_kg": 450.0,
+        "dbt_subsidized_price_inr": 225.0,
+        "stock_kg": 1200
+      },
+      {
+        "crop": "Paddy",
+        "variety": "MO-4 (Bhadra)",
+        "sathi_lot_number": "KA-2024-SATHI-4412",
+        "tag": "Blue (Certified)",
+        "germination_pct": 92.5,
+        "purity_pct": 98.0,
+        "mrp_inr_kg": 42.0,
+        "dbt_subsidized_price_inr": 21.0,
+        "stock_kg": 3500
+      }
+    ]
+  },
+  {
+    "id": "hub-002",
+    "name": "RSK Ujire Sub-Center",
+    "hub_type": "RSK",
+    "latitude": 13.0028,
+    "longitude": 75.3262,
+    "district": "Dakshina Kannada",
+    "taluk": "Belthangady",
+    "contact_phone": "08256-236440",
+    "inventory": [
+      {
+        "crop": "Arecanut",
+        "variety": "Mohitnagar",
+        "sathi_lot_number": "KA-2024-SATHI-9012",
+        "tag": "White (Foundation)",
+        "germination_pct": 96.0,
+        "purity_pct": 99.5,
+        "mrp_inr_kg": 500.0,
+        "dbt_subsidized_price_inr": 250.0,
+        "stock_kg": 850
+      },
+      {
+        "crop": "Black Pepper",
+        "variety": "Panniyur-1 Rooted Cuttings",
+        "sathi_lot_number": "KA-2024-SATHI-2210",
+        "tag": "Green (Breeder/Elite)",
+        "germination_pct": 98.0,
+        "purity_pct": 99.8,
+        "mrp_inr_kg": 85.0,
+        "dbt_subsidized_price_inr": 42.5,
+        "stock_kg": 2000
+      }
+    ]
+  },
+  {
+    "id": "hub-003",
+    "name": "KVK Dakshina Kannada (Mangaluru)",
+    "hub_type": "KVK",
+    "latitude": 12.8703,
+    "longitude": 74.8560,
+    "district": "Dakshina Kannada",
+    "taluk": "Mangaluru",
+    "contact_phone": "0824-2431872",
+    "inventory": [
+      {
+        "crop": "Paddy",
+        "variety": "Jaya",
+        "sathi_lot_number": "KA-2024-SATHI-1102",
+        "tag": "Blue (Certified)",
+        "germination_pct": 91.0,
+        "purity_pct": 97.5,
+        "mrp_inr_kg": 38.0,
+        "dbt_subsidized_price_inr": 19.0,
+        "stock_kg": 5000
+      }
+    ]
+  }
+]

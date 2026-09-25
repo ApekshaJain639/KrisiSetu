@@ -1,0 +1,232 @@
+{
+  "type": "FeatureCollection",
+  "name": "ICAR_Agro_Climatic_Zones_India",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "zone_no": 1,
+        "zone_name": "Western Himalayan Region",
+        "states": "Jammu & Kashmir, Himachal Pradesh, Uttarakhand",
+        "climate": "Cold, sub-humid to temperate",
+        "soil": "Brown hill soils, mountain meadow soils"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[73.5, 32.0], [77.0, 36.5], [80.5, 31.5], [78.0, 30.0], [74.0, 31.5], [73.5, 32.0]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "zone_no": 2,
+        "zone_name": "Eastern Himalayan Region",
+        "states": "Assam, Sikkim, Arunachal Pradesh, Meghalaya, Nagaland, Manipur, Mizoram, Tripura",
+        "climate": "High rainfall, per-humid",
+        "soil": "Red, lateritic, alluvial"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[88.0, 26.5], [94.5, 29.5], [97.0, 27.5], [93.0, 23.0], [89.5, 24.5], [88.0, 26.5]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "zone_no": 3,
+        "zone_name": "Lower Gangetic Plain Region",
+        "states": "West Bengal",
+        "climate": "Moist sub-humid to humid",
+        "soil": "Alluvial, deltaic"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[86.5, 21.5], [88.5, 25.5], [89.8, 23.5], [88.5, 21.5], [86.5, 21.5]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "zone_no": 4,
+        "zone_name": "Middle Gangetic Plain Region",
+        "states": "Uttar Pradesh (East), Bihar",
+        "climate": "Sub-humid continental",
+        "soil": "Alluvial, calcareous loam"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[81.5, 24.5], [85.5, 27.5], [87.5, 25.5], [83.5, 23.8], [81.5, 24.5]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "zone_no": 5,
+        "zone_name": "Upper Gangetic Plain Region",
+        "states": "Uttar Pradesh (West)",
+        "climate": "Semi-arid to sub-humid",
+        "soil": "Deep alluvial, sandy loam"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[77.5, 27.0], [78.5, 30.0], [81.5, 27.5], [79.5, 25.5], [77.5, 27.0]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "zone_no": 6,
+        "zone_name": "Trans-Gangetic Plain Region",
+        "states": "Punjab, Haryana, Delhi, Rajasthan (Ganganagar)",
+        "climate": "Semi-arid, hot summers, cold winters",
+        "soil": "Alluvial, sandy loam, sierozemic"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[73.8, 29.0], [75.5, 32.0], [77.8, 30.5], [77.2, 28.0], [74.5, 28.5], [73.8, 29.0]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "zone_no": 7,
+        "zone_name": "Eastern Plateau and Hills Region",
+        "states": "Jharkhand, Odisha, Chhattisgarh, West Bengal (Purulia)",
+        "climate": "Sub-humid tropical",
+        "soil": "Red and yellow soils, laterite"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[81.0, 19.5], [84.0, 24.0], [86.5, 23.0], [85.5, 19.0], [82.0, 18.5], [81.0, 19.5]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "zone_no": 8,
+        "zone_name": "Central Plateau and Hills Region",
+        "states": "Madhya Pradesh, Rajasthan (SE), Uttar Pradesh (Bundelkhand)",
+        "climate": "Semi-arid to sub-humid",
+        "soil": "Mixed red and black soils"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[75.5, 23.0], [78.5, 26.5], [81.5, 24.0], [79.0, 21.5], [75.5, 23.0]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "zone_no": 9,
+        "zone_name": "Western Plateau and Hills Region",
+        "states": "Maharashtra, Madhya Pradesh (Malwa)",
+        "climate": "Semi-arid",
+        "soil": "Medium to deep black soils (Vertisols)"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[73.5, 17.5], [74.5, 22.0], [78.0, 21.0], [77.0, 16.5], [73.5, 17.5]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "zone_no": 10,
+        "zone_name": "Southern Plateau and Hills Region",
+        "states": "Karnataka (Interior), Andhra Pradesh, Telangana, Tamil Nadu (Inland)",
+        "climate": "Semi-arid",
+        "soil": "Red sandy loam, medium black soils"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[75.8, 12.0], [76.5, 18.0], [79.5, 17.5], [79.0, 11.5], [77.0, 11.0], [75.8, 12.0]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "zone_no": 11,
+        "zone_name": "East Coast Plains and Hills Region",
+        "states": "Tamil Nadu (Coastal), Andhra Pradesh (Coastal), Odisha",
+        "climate": "Sub-humid to semi-arid marine",
+        "soil": "Alluvial, coastal sands, deltaic"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[79.2, 9.0], [80.5, 15.5], [86.0, 20.0], [84.0, 18.0], [79.8, 11.0], [79.2, 9.0]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "zone_no": 12,
+        "zone_name": "West Coast Plains and Ghats Region",
+        "states": "Karnataka (Coastal & Malnad - Dakshina Kannada, Udupi, Uttara Kannada), Kerala, Goa, Maharashtra (Konkan)",
+        "climate": "Humid to per-humid tropical, heavy monsoon rainfall (2000-3500mm)",
+        "soil": "Laterite, red loam, coastal alluvium"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [72.8, 19.5],
+            [73.8, 15.8],
+            [74.5, 14.5],
+            [75.0, 13.5],
+            [75.6, 12.5],
+            [76.5, 10.0],
+            [77.5, 8.2],
+            [76.8, 8.4],
+            [75.5, 11.5],
+            [74.5, 13.5],
+            [73.5, 15.5],
+            [72.5, 19.0],
+            [72.8, 19.5]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "zone_no": 13,
+        "zone_name": "Gujarat Plains and Hills Region",
+        "states": "Gujarat, Daman & Diu, Dadra & Nagar Haveli",
+        "climate": "Arid to semi-arid",
+        "soil": "Black soils, alluvial, coastal saline"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[69.0, 21.0], [71.5, 24.5], [74.0, 23.5], [73.0, 20.5], [69.0, 21.0]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "zone_no": 14,
+        "zone_name": "Western Dry Region",
+        "states": "Rajasthan (Thar Desert)",
+        "climate": "Hot arid, desert, erratic rainfall (<350mm)",
+        "soil": "Desert soils, sand dunes, saline"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[70.0, 25.0], [71.5, 29.5], [74.5, 28.0], [72.5, 24.5], [70.0, 25.0]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "zone_no": 15,
+        "zone_name": "The Islands Region",
+        "states": "Andaman & Nicobar Islands, Lakshadweep",
+        "climate": "Equatorial, per-humid",
+        "soil": "Marine alluvium, coral sand, laterite"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[92.0, 6.5], [93.5, 13.5], [94.0, 13.0], [93.0, 6.8], [92.0, 6.5]]]
+      }
+    }
+  ]
+}

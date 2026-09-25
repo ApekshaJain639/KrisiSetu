@@ -1,0 +1,40 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Backend: FastAPI (Port 8000)",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "uvicorn",
+      "args": [
+        "app.main:app",
+        "--reload",
+        "--host",
+        "0.0.0.0",
+        "--port",
+        "8000"
+      ],
+      "cwd": "${workspaceFolder}/apps/api",
+      "env": {
+        "PYTHONIOENCODING": "utf-8",
+        "PYTHONUTF8": "1"
+      }
+    },
+    {
+      "name": "Frontend: Next.js (Port 3000)",
+      "type": "node-terminal",
+      "request": "launch",
+      "command": "npm run dev",
+      "cwd": "${workspaceFolder}/apps/web"
+    }
+  ],
+  "compounds": [
+    {
+      "name": "🚀 Run KrishiSetu (Full Stack: Backend + Frontend)",
+      "configurations": [
+        "Backend: FastAPI (Port 8000)",
+        "Frontend: Next.js (Port 3000)"
+      ]
+    }
+  ]
+}
