@@ -52,16 +52,37 @@ export interface DbHealth {
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api/v1";
 
+function getAdminHeaders(): Record<string, string> {
+  const headers: Record<string, string> = { "Content-Type": "application/json" };
+  if (typeof window !== "undefined") {
+    try {
+      const { useFarmStore } = require("@/stores/useFarmStore");
+      const user = useFarmStore.getState().currentUser;
+      if (user?.token) {
+        headers["Authorization"] = `Bearer ${user.token}`;
+      }
+      if (user?.role) {
+        headers["X-User-Role"] = user.role;
+      }
+    } catch {
+      // ignore
+    }
+  }
+  return headers;
+}
+
 export async function fetchDbHealth(): Promise<DbHealth> {
   try {
     const res = await fetch(`${API_BASE}/admin/db-health`, {
       method: "GET",
-      headers: { "Content-Type": "application/json" },
+      headers: getAdminHeaders(),
       cache: "no-store",
     });
+    if (res.status === 403) throw new Error("HTTP 403 Forbidden: Registered farmers cannot access admin endpoints.");
     if (!res.ok) throw new Error("HTTP error " + res.status);
     return await res.json();
-  } catch (e) {
+  } catch (e: any) {
+    if (e.message && e.message.includes("403")) throw e;
     // Real SQLite representation from krisisetu.db
     return {
       database_connected: true,
@@ -88,12 +109,14 @@ export async function fetchAdminOverview(): Promise<DbOverview> {
   try {
     const res = await fetch(`${API_BASE}/admin/overview`, {
       method: "GET",
-      headers: { "Content-Type": "application/json" },
+      headers: getAdminHeaders(),
       cache: "no-store",
     });
+    if (res.status === 403) throw new Error("HTTP 403 Forbidden: Registered farmers cannot access admin endpoints.");
     if (!res.ok) throw new Error("HTTP error " + res.status);
     return await res.json();
-  } catch (e) {
+  } catch (e: any) {
+    if (e.message && e.message.includes("403")) throw e;
     return {
       status: "HEALTHY",
       system: "KRISISETU Agriculture Officer Intelligence Console",
@@ -119,12 +142,15 @@ export async function fetchDbFarmers(): Promise<DbFarmerRecord[]> {
   try {
     const res = await fetch(`${API_BASE}/admin/farmers`, {
       method: "GET",
-      headers: { "Content-Type": "application/json" },
+      headers: getAdminHeaders(),
       cache: "no-store",
     });
+    if (res.status === 403) throw new Error("HTTP 403 Forbidden: Registered farmers cannot access admin endpoints.");
     if (!res.ok) throw new Error("HTTP error " + res.status);
     return await res.json();
-  } catch (e) {
+  } catch (e: any) {
+    if (e.message && e.message.includes("403")) throw e;
+    const todayStr = new Date().toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" });
     return [
       {
         id: 1,
@@ -137,7 +163,7 @@ export async function fetchDbFarmers(): Promise<DbFarmerRecord[]> {
         language: "kn",
         is_fruits_verified: true,
         primary_crop: "Arecanut · Mangala + Black Pepper",
-        last_scan_date: "18 Jun 2024",
+        last_scan_date: todayStr,
       },
       {
         id: 2,
@@ -968,11 +994,13 @@ export async function triggerMandiETL() {
   try {
     const res = await fetch(`${API_BASE}/admin/trigger-etl`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: getAdminHeaders(),
     });
+    if (res.status === 403) throw new Error("HTTP 403 Forbidden: Registered farmers cannot access admin endpoints.");
     if (!res.ok) throw new Error("Trigger ETL error " + res.status);
     return await res.json();
-  } catch {
+  } catch (e: any) {
+    if (e.message && e.message.includes("403")) throw e;
     const nowStr = new Date().toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" });
     return {
       status: "ETL_RELOAD_SUCCESS",
@@ -990,11 +1018,13 @@ export async function fetchScheduledTasks() {
   try {
     const res = await fetch(`${API_BASE}/admin/scheduled-tasks`, {
       method: "GET",
-      headers: { "Content-Type": "application/json" },
+      headers: getAdminHeaders(),
     });
+    if (res.status === 403) throw new Error("HTTP 403 Forbidden: Registered farmers cannot access admin endpoints.");
     if (!res.ok) throw new Error("Tasks API error " + res.status);
     return await res.json();
-  } catch {
+  } catch (e: any) {
+    if (e.message && e.message.includes("403")) throw e;
     return [
       {
         id: "task-mandi-etl",
@@ -1028,11 +1058,13 @@ export async function fetchCopilotLogs() {
   try {
     const res = await fetch(`${API_BASE}/admin/copilot-logs`, {
       method: "GET",
-      headers: { "Content-Type": "application/json" },
+      headers: getAdminHeaders(),
     });
+    if (res.status === 403) throw new Error("HTTP 403 Forbidden: Registered farmers cannot access admin endpoints.");
     if (!res.ok) throw new Error("Copilot logs error " + res.status);
     return await res.json();
-  } catch {
+  } catch (e: any) {
+    if (e.message && e.message.includes("403")) throw e;
     return [
       {
         id: "log-01",

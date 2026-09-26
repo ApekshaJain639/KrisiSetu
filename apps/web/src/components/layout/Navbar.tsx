@@ -17,8 +17,9 @@ import {
   LogOut,
   MapPin,
   Loader2,
+  Lock,
 } from "lucide-react";
-import { useFarmStore, Language, ViewMode } from "@/stores/useFarmStore";
+import { useFarmStore, Language, ViewMode, isUserAdmin } from "@/stores/useFarmStore";
 import { useTranslation } from "@/lib/i18n/translations";
 
 export const Navbar: React.FC = () => {
@@ -41,6 +42,7 @@ export const Navbar: React.FC = () => {
     logoutUser,
   } = useFarmStore();
 
+  const isAdmin = isUserAdmin(currentUser);
   const t = useTranslation(language);
   const [langMenuOpen, setLangMenuOpen] = useState(false);
   const [notificationOpen, setNotificationOpen] = useState(false);
@@ -93,17 +95,38 @@ export const Navbar: React.FC = () => {
               <LayoutDashboard className="w-3.5 h-3.5" />
               <span>{language === "kn" ? "ರೈತರ ಡೆಸ್ಕ್" : "Farm Desk"}</span>
             </button>
-            <button
-              onClick={() => setViewMode("admin")}
-              className={`px-3 py-1 text-xs font-bold rounded-lg transition-all flex items-center gap-1.5 ${
-                viewMode === "admin"
-                  ? "bg-krishi-700 text-white shadow-sm"
-                  : "text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white"
-              }`}
-            >
-              <ShieldCheck className="w-3.5 h-3.5" />
-              <span>{language === "kn" ? "ಸಂಚಾಲಕ ಕನ್ಸೋಲ್" : "Admin Console"}</span>
-            </button>
+
+            {/* Admin Console Pill - Unlocked for Admins, Locked indicator for Farmers */}
+            {isAdmin ? (
+              <button
+                onClick={() => setViewMode("admin")}
+                className={`px-3 py-1 text-xs font-bold rounded-lg transition-all flex items-center gap-1.5 ${
+                  viewMode === "admin"
+                    ? "bg-krishi-700 text-white shadow-sm"
+                    : "text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white"
+                }`}
+              >
+                <ShieldCheck className="w-3.5 h-3.5 text-krishi-gold" />
+                <span>{language === "kn" ? "ಸಂಚಾಲಕ ಕನ್ಸೋಲ್" : "Admin Console"}</span>
+              </button>
+            ) : (
+              <button
+                onClick={() => setViewMode("admin")}
+                className={`px-3 py-1 text-xs font-bold rounded-lg transition-all flex items-center gap-1.5 ${
+                  viewMode === "admin"
+                    ? "bg-rose-600 text-white shadow-sm"
+                    : "text-slate-400 dark:text-slate-500 hover:text-rose-600 dark:hover:text-rose-400"
+                }`}
+                title={language === "kn" ? "ಸಂಚಾಲಕ ಕನ್ಸೋಲ್ (ಅಧಿಕಾರಿಗಳಿಗೆ ಮಾತ್ರ)" : "Admin Console (Admin Sign-In Required)"}
+              >
+                <Lock className="w-3.5 h-3.5 text-amber-500" />
+                <span>{language === "kn" ? "ಸಂಚಾಲಕ ಕನ್ಸೋಲ್" : "Admin Console"}</span>
+                <span className="text-[9px] bg-amber-100 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300 px-1 py-0.2 rounded border border-amber-300 dark:border-amber-700">
+                  Locked
+                </span>
+              </button>
+            )}
+
             <button
               onClick={() => setViewMode("landing")}
               className={`px-3 py-1 text-xs font-bold rounded-lg transition-all flex items-center gap-1.5 ${
@@ -271,7 +294,7 @@ export const Navbar: React.FC = () => {
           {/* User Profile & Sign Out */}
           <div className="flex items-center gap-2 pl-2 border-l border-slate-200 dark:border-krishi-darkborder">
             <div className={`w-8 h-8 rounded-full flex items-center justify-center font-black text-xs shadow-sm ring-2 ${
-              currentUser?.role === "sdm_admin" || currentUser?.role === "district_officer"
+              isAdmin
                 ? "bg-slate-900 text-krishi-gold ring-krishi-gold/40 dark:bg-slate-800"
                 : "bg-krishi-gold text-slate-900 ring-krishi-gold/20"
             }`}>
@@ -284,11 +307,9 @@ export const Navbar: React.FC = () => {
                 {currentUser?.name || farmerName}
               </span>
               <span className="text-[10px] text-slate-500 dark:text-slate-400 block leading-tight">
-                {currentUser?.role === "sdm_admin"
-                  ? "SDM Admin"
-                  : currentUser?.role === "district_officer"
-                  ? "District Officer"
-                  : `${currentUser?.taluk || "Puttur"} · 4.2A`}
+                {isAdmin
+                  ? "👑 SDM Administrator"
+                  : `${currentUser?.taluk || "Puttur"} · Farmer`}
               </span>
             </div>
             <button

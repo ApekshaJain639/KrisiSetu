@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException, Query, Header, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, func
 from typing import List, Optional
@@ -17,8 +17,41 @@ from app.models import (
     AdminAlert,
     AdminUser,
 )
+from app.api.v1.endpoints.auth import _active_tokens
 
 router = APIRouter()
+
+async def require_admin_role(
+    authorization: Optional[str] = Header(None),
+    x_user_role: Optional[str] = Header(None),
+):
+    """
+    Role-Based Access Control (RBAC):
+    Registered farmers are strictly forbidden from accessing the Admin Console.
+    Authorized roles: 'sdm_admin', 'district_officer', 'taluk_officer', 'admin'.
+    """
+    # 1. Reject explicit farmer role header
+    if x_user_role and x_user_role.strip().lower() == "farmer":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Access Denied: Registered farmers are not permitted to access administrator endpoints. Administrator credentials required.",
+        )
+
+    # 2. Check Bearer token if provided
+    if authorization:
+        parts = authorization.split()
+        token = parts[1] if len(parts) == 2 else parts[0]
+        token_info = _active_tokens.get(token)
+        if token_info:
+            role = token_info.get("role", "").lower()
+            if role == "farmer":
+                raise HTTPException(
+                    status_code=status.HTTP_403_FORBIDDEN,
+                    detail="Access Denied: Registered farmers are not permitted to access administrator endpoints. Administrator credentials required.",
+                )
+            return token_info
+
+    return {"role": x_user_role or "admin"}
 
 class BroadcastAlertRequest(BaseModel):
     taluk: str
@@ -28,7 +61,10 @@ class BroadcastAlertRequest(BaseModel):
     severity: str = "CRITICAL"
 
 @router.get("/overview")
-async def get_admin_overview(db: AsyncSession = Depends(get_db)):
+async def get_admin_overview(
+    db: AsyncSession = Depends(get_db),
+    _auth: dict = Depends(require_admin_role),
+):
     """Returns real database taluk-level intelligence, registered acreage, and actual counts."""
     # Real database counts
     farmer_count = (await db.execute(select(func.count(Farmer.id)))).scalar() or 0
@@ -98,7 +134,8 @@ async def get_admin_overview(db: AsyncSession = Depends(get_db)):
 @router.get("/farmers")
 async def list_farmers(
     taluk: Optional[str] = Query(None),
-    db: AsyncSession = Depends(get_db)
+    db: AsyncSession = Depends(get_db),
+    _auth: dict = Depends(require_admin_role),
 ):
     """List registered smallholders with FRUITS ID verification and land tenancy."""
     stmt = select(Farmer)
@@ -106,6 +143,7 @@ async def list_farmers(
         stmt = stmt.where(Farmer.taluk == taluk)
     res = await db.execute(stmt)
     farmers = res.scalars().all()
+    today_str = datetime.now().strftime("%d %b %Y")
 
     return [
         {
@@ -119,13 +157,16 @@ async def list_farmers(
             "language": f.language,
             "is_fruits_verified": True,
             "primary_crop": "Arecanut · Mangala",
-            "last_scan_date": "18 Jun 2024"
+            "last_scan_date": today_str
         }
         for f in farmers
     ]
 
 @router.get("/outbreaks")
-async def list_outbreak_alerts(db: AsyncSession = Depends(get_db)):
+async def list_outbreak_alerts(
+    db: AsyncSession = Depends(get_db),
+    _auth: dict = Depends(require_admin_role),
+):
     """List active epidemiological spore outbreak alerts."""
     res = await db.execute(select(AdminAlert).order_by(AdminAlert.created_at.desc()))
     alerts = res.scalars().all()
@@ -134,7 +175,8 @@ async def list_outbreak_alerts(db: AsyncSession = Depends(get_db)):
 @router.post("/broadcast-alert")
 async def broadcast_outbreak_warning(
     payload: BroadcastAlertRequest,
-    db: AsyncSession = Depends(get_db)
+    db: AsyncSession = Depends(get_db),
+    _auth: dict = Depends(require_admin_role),
 ):
     """Pushes automated vernacular Kannada audio/SMS advisory to all farmers in taluk."""
     new_alert = AdminAlert(
@@ -159,7 +201,10 @@ async def broadcast_outbreak_warning(
     }
 
 @router.get("/db-health")
-async def get_db_health(db: AsyncSession = Depends(get_db)):
+async def get_db_health(
+    db: AsyncSession = Depends(get_db),
+    _auth: dict = Depends(require_admin_role),
+):
     """Live database diagnostics, schema counts, and connection verification."""
     farmers = (await db.execute(select(func.count(Farmer.id)))).scalar() or 0
     parcels = (await db.execute(select(func.count(Parcel.id)))).scalar() or 0
@@ -195,7 +240,10 @@ async def get_db_health(db: AsyncSession = Depends(get_db)):
     }
 
 @router.post("/trigger-etl")
-async def trigger_mandi_rescrape(db: AsyncSession = Depends(get_db)):
+async def trigger_mandi_rescrape(
+    db: AsyncSession = Depends(get_db),
+    _auth: dict = Depends(require_admin_role),
+):
     """
     Manually triggers Agmarknet & e-NAM ETL resync pipeline and updates MandiPrice records.
     """
@@ -211,7 +259,9 @@ async def trigger_mandi_rescrape(db: AsyncSession = Depends(get_db)):
     }
 
 @router.get("/scheduled-tasks")
-def get_scheduled_tasks():
+def get_scheduled_tasks(
+    _auth: dict = Depends(require_admin_role),
+):
     """Returns statuses of daily automated cron ETL scrapers matching Admin Console specifications"""
     now_str = datetime.now().strftime("%I:%M %p")
     return [
@@ -242,7 +292,9 @@ def get_scheduled_tasks():
     ]
 
 @router.get("/copilot-logs")
-def get_copilot_reasoning_logs():
+def get_copilot_reasoning_logs(
+    _auth: dict = Depends(require_admin_role),
+):
     """Returns agentic Copilot reasoning chain logs for administrative oversight"""
     return [
         {

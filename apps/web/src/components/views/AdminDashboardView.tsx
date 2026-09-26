@@ -30,7 +30,8 @@ import {
   ChevronRight,
   X,
 } from "lucide-react";
-import { useFarmStore } from "@/stores/useFarmStore";
+import { useFarmStore, isUserAdmin } from "@/stores/useFarmStore";
+import { AdminAccessDeniedGuard } from "@/components/auth/AdminAccessDeniedGuard";
 import { useTranslation } from "@/lib/i18n/translations";
 import {
   fetchAdminOverview,
@@ -51,8 +52,9 @@ import {
 export type AdminTab = "overview" | "farmers" | "market" | "copilot";
 
 export const AdminDashboardView: React.FC = () => {
-  const { language, setLanguage, setViewMode } = useFarmStore();
+  const { language, setLanguage, setViewMode, currentUser } = useFarmStore();
   const t = useTranslation(language);
+  const isAdmin = isUserAdmin(currentUser);
 
   // Active top tab
   const [activeTab, setActiveTab] = useState<AdminTab>("overview");
@@ -86,8 +88,10 @@ export const AdminDashboardView: React.FC = () => {
   const [broadcastSuccess, setBroadcastSuccess] = useState(false);
 
   useEffect(() => {
-    loadAllAdminData();
-  }, []);
+    if (isAdmin) {
+      loadAllAdminData();
+    }
+  }, [isAdmin]);
 
   const loadAllAdminData = async () => {
     setLoading(true);
@@ -152,6 +156,11 @@ export const AdminDashboardView: React.FC = () => {
       selectedTalukFilter === "All" || f.taluk === selectedTalukFilter;
     return matchesSearch && matchesTaluk;
   });
+
+  // Guard: If not an admin, render the access denied security guard
+  if (!isAdmin) {
+    return <AdminAccessDeniedGuard />;
+  }
 
   return (
     <div className="space-y-6 animate-fadeIn pb-12">

@@ -15,8 +15,9 @@ import {
   ChevronRight,
   ShieldCheck,
   MapPin,
+  Lock,
 } from "lucide-react";
-import { useFarmStore, ActiveTab } from "@/stores/useFarmStore";
+import { useFarmStore, ActiveTab, isUserAdmin } from "@/stores/useFarmStore";
 import { useTranslation } from "@/lib/i18n/translations";
 
 export const Sidebar: React.FC = () => {
@@ -30,8 +31,10 @@ export const Sidebar: React.FC = () => {
     copilotOpen,
     setCopilotOpen,
     setViewMode,
+    currentUser,
   } = useFarmStore();
 
+  const isAdmin = isUserAdmin(currentUser);
   const t = useTranslation(language);
 
   const navItems: { id: ActiveTab; label: string; icon: React.ElementType; badge?: string }[] = [
@@ -126,16 +129,37 @@ export const Sidebar: React.FC = () => {
 
       {/* Bottom Shortcuts */}
       <div className="p-3 border-t border-[#1b4a2e] space-y-2">
-        <button
-          onClick={() => setViewMode("admin")}
-          className="w-full bg-[#143a23] hover:bg-[#1a4a2d] border border-[#235838] p-2 rounded-xl flex items-center justify-between text-left text-xs font-semibold text-emerald-200 transition"
-        >
-          <div className="flex items-center gap-2">
-            <ShieldCheck className="w-4 h-4 text-emerald-400" />
-            <span>Developer / Admin Console</span>
-          </div>
-          <ChevronRight className="w-3.5 h-3.5 text-emerald-400" />
-        </button>
+        {isAdmin ? (
+          <button
+            onClick={() => setViewMode("admin")}
+            className="w-full bg-[#143a23] hover:bg-[#1a4a2d] border border-[#235838] p-2 rounded-xl flex items-center justify-between text-left text-xs font-semibold text-emerald-200 transition"
+          >
+            <div className="flex items-center gap-2">
+              <ShieldCheck className="w-4 h-4 text-krishi-gold" />
+              <span>Admin Console</span>
+            </div>
+            <span className="text-[9px] font-bold bg-emerald-900/60 text-emerald-300 px-1.5 py-0.5 rounded border border-emerald-700">
+              Active
+            </span>
+          </button>
+        ) : (
+          <button
+            onClick={() => setViewMode("admin")}
+            className="w-full bg-[#122c1b] hover:bg-[#183622] border border-[#1f472d] p-2 rounded-xl flex items-center justify-between text-left text-xs font-semibold text-slate-300 transition group"
+            title="Admin authorization required"
+          >
+            <div className="flex items-center gap-2">
+              <Lock className="w-4 h-4 text-amber-400" />
+              <div>
+                <span className="block leading-tight text-emerald-100">Admin Console</span>
+                <span className="text-[9px] text-amber-300/80 block leading-tight">Admin Sign-In Only</span>
+              </div>
+            </div>
+            <span className="text-[9px] font-bold bg-amber-950/60 text-amber-300 px-1.5 py-0.5 rounded border border-amber-800/60">
+              Locked
+            </span>
+          </button>
+        )}
 
         <button
           onClick={() => setCopilotOpen(!copilotOpen)}

@@ -23,6 +23,7 @@ import {
 import { useFarmStore } from "@/stores/useFarmStore";
 import { useTranslation } from "@/lib/i18n/translations";
 import { loginFarmer, registerFarmer, loginAdmin } from "@/lib/db-client";
+import { useEffect } from "react";
 
 export const SignInView: React.FC = () => {
   const {
@@ -33,11 +34,19 @@ export const SignInView: React.FC = () => {
     toggleTheme,
     setCurrentUser,
     setFarmerProfile,
+    initialAuthTab,
+    setInitialAuthTab,
   } = useFarmStore();
   const t = useTranslation(language);
 
   // Tab: 'signin' (Farmer Login) | 'signup' (Create Account) | 'admin' (Admin Login)
-  const [authTab, setAuthTab] = useState<"signin" | "signup" | "admin">("signin");
+  const [authTab, setAuthTab] = useState<"signin" | "signup" | "admin">(initialAuthTab || "signin");
+
+  useEffect(() => {
+    if (initialAuthTab) {
+      setAuthTab(initialAuthTab);
+    }
+  }, [initialAuthTab]);
 
   // Loading & error state
   const [loading, setLoading] = useState(false);

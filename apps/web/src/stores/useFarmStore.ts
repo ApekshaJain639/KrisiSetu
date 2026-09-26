@@ -33,6 +33,19 @@ interface DbStats {
   };
 }
 
+export const isUserAdmin = (user: { role?: string } | null | undefined): boolean => {
+  if (!user || !user.role) return false;
+  const r = user.role.toLowerCase();
+  return (
+    r === "sdm_admin" ||
+    r === "district_officer" ||
+    r === "taluk_officer" ||
+    r === "admin" ||
+    r.includes("admin") ||
+    r.includes("officer")
+  );
+};
+
 interface FarmState {
   farmerName: string;
   farmName: string;
@@ -59,6 +72,10 @@ interface FarmState {
 
   // Database status
   dbStats: DbStats;
+
+  // Initial Auth Tab for SignIn view ('signin' | 'signup' | 'admin')
+  initialAuthTab: "signin" | "signup" | "admin";
+  setInitialAuthTab: (tab: "signin" | "signup" | "admin") => void;
 
   // Authenticated user session
   currentUser: {
@@ -129,6 +146,9 @@ export const useFarmStore = create<FarmState>((set) => ({
       seed_hubs: 2,
     },
   },
+
+  initialAuthTab: "signin",
+  setInitialAuthTab: (initialAuthTab) => set({ initialAuthTab }),
 
   currentUser: {
     userId: 1,
