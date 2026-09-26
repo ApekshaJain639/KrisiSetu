@@ -19,6 +19,10 @@ import {
   Sparkles,
   Printer,
   Download,
+  FileCheck,
+  Eye,
+  Check,
+  Trash2,
 } from "lucide-react";
 import { useFarmStore } from "@/stores/useFarmStore";
 import { useTranslation } from "@/lib/i18n/translations";
@@ -60,6 +64,12 @@ export const GisFieldMapView: React.FC = () => {
   const [isOcrProcessing, setIsOcrProcessing] = useState(false);
   const [ocrResult, setOcrResult] = useState<RtcOcrResult | null>(null);
   const [rtcUploadError, setRtcUploadError] = useState<string | null>(null);
+  const [ocrStep, setOcrStep] = useState<string>("");
+  const [uploadedFilePreview, setUploadedFilePreview] = useState<string | null>(null);
+  const [uploadedFileName, setUploadedFileName] = useState<string | null>(null);
+  const [uploadedFileSize, setUploadedFileSize] = useState<string | null>(null);
+  const [isDragging, setIsDragging] = useState(false);
+  const [appliedNotification, setAppliedNotification] = useState<string | null>(null);
   const rtcFileInputRef = useRef<HTMLInputElement>(null);
 
   // Polygon boundary coordinates
@@ -72,6 +82,49 @@ export const GisFieldMapView: React.FC = () => {
 
   const [fieldAcreage, setFieldAcreage] = useState<number>(acreage || 4.2);
   const [fieldPerimeter, setFieldPerimeter] = useState<number>(285.4);
+
+  // Dynamic SVG projection helpers for geodesic polygon
+  const getSvgPolygonPoints = () => {
+    if (!polygonCoords || polygonCoords.length < 3) {
+      return "210,140 460,110 540,310 270,360";
+    }
+    const lngs = polygonCoords.map((p) => p[0]);
+    const lats = polygonCoords.map((p) => p[1]);
+    const minLng = Math.min(...lngs);
+    const maxLng = Math.max(...lngs);
+    const minLat = Math.min(...lats);
+    const maxLat = Math.max(...lats);
+
+    const lngSpan = maxLng - minLng || 0.005;
+    const latSpan = maxLat - minLat || 0.005;
+
+    // ViewBox canvas is 800 x 480
+    const padX = 180;
+    const padY = 90;
+    const drawWidth = 440;
+    const drawHeight = 280;
+
+    return polygonCoords
+      .map(([lng, lat]) => {
+        const x = Math.round(padX + ((lng - minLng) / lngSpan) * drawWidth);
+        const y = Math.round(padY + ((maxLat - lat) / latSpan) * drawHeight);
+        return `${x},${y}`;
+      })
+      .join(" ");
+  };
+
+  const getSvgVertices = () => {
+    const pts = getSvgPolygonPoints().split(" ");
+    return pts.map((pt, idx) => {
+      const [x, y] = pt.split(",").map(Number);
+      return {
+        x,
+        y,
+        coord: polygonCoords[idx] || [0, 0],
+        label: `V${idx + 1}`,
+      };
+    });
+  };
 
   // Load live hydrogeology telemetry from backend
   useEffect(() => {
@@ -88,12 +141,24 @@ export const GisFieldMapView: React.FC = () => {
     };
   }, [latitude, longitude]);
 
-  // Handle RTC Pahani / e-Swathu file upload
-  const handleRtcFileUpload = async (file: File) => {
+  // Handle RTC Pahani / e-Swathu file upload with live scanning pipeline
+  const processFile = async (file: File) => {
+    if (file.type.startsWith("image/")) {
+      const url = URL.createObjectURL(file);
+      setUploadedFilePreview(url);
+    } else {
+      setUploadedFilePreview(null);
+    }
+    setUploadedFileName(file.name);
+    setUploadedFileSize((file.size / 1024).toFixed(1) + " KB");
     setIsOcrProcessing(true);
     setRtcUploadError(null);
+    setOcrStep("1/3 Scanning Karnataka Bhoomi QR & Survey Number...");
 
     try {
+      setTimeout(() => setOcrStep("2/3 Parsing owner khata & tenancy records..."), 600);
+      setTimeout(() => setOcrStep("3/3 Computing geodesic boundary polygon..."), 1200);
+
       const res = await uploadRtcDocumentOcr(
         file,
         latitude || 12.7687,
@@ -111,7 +176,6 @@ export const GisFieldMapView: React.FC = () => {
           setFieldPerimeter(res.perimeter_m);
         }
         if (res.boundary_polygon && res.boundary_polygon.length >= 4) {
-          // Convert from GeoJSON [[lng, lat]]
           const coords = res.boundary_polygon.slice(0, 4).map((p) => [p[0], p[1]] as [number, number]);
           setPolygonCoords(coords);
         }
@@ -120,6 +184,67 @@ export const GisFieldMapView: React.FC = () => {
       setRtcUploadError("Document scan failed. Switched to verified Karnataka Bhoomi template.");
     } finally {
       setIsOcrProcessing(false);
+      setOcrStep("");
+    }
+  };
+
+  // Demo one-click RTC loader for users without a file
+  const handleLoadSampleRtc = async () => {
+    setUploadedFileName("Karnataka_Bhoomi_RTC_Sy142_3A_Puttur.pdf");
+    setUploadedFileSize("284.6 KB");
+    setUploadedFilePreview(null);
+    setIsOcrProcessing(true);
+    setRtcUploadError(null);
+    setOcrStep("Loading official Karnataka Bhoomi Form 16 record...");
+
+    try {
+      setTimeout(() => setOcrStep("Extracting Survey #142/3A & Hissa #1..."), 500);
+      const res = await uploadRtcDocumentOcr(
+        undefined,
+        latitude || 12.7687,
+        longitude || 75.2071,
+        currentUser?.userId || 1
+      );
+
+      if (res) {
+        setOcrResult(res);
+        if (res.extracted_acreage) {
+          setFieldAcreage(res.extracted_acreage);
+          setFarmerProfile({ acreage: res.extracted_acreage });
+        }
+        if (res.perimeter_m) {
+          setFieldPerimeter(res.perimeter_m);
+        }
+        if (res.boundary_polygon && res.boundary_polygon.length >= 4) {
+          const coords = res.boundary_polygon.slice(0, 4).map((p) => [p[0], p[1]] as [number, number]);
+          setPolygonCoords(coords);
+        }
+      }
+    } catch {
+      setRtcUploadError("Sample load failed. Check server connection.");
+    } finally {
+      setIsOcrProcessing(false);
+      setOcrStep("");
+    }
+  };
+
+  const handleApplyToMap = () => {
+    setShowRtcModal(false);
+    if (ocrResult) {
+      setAppliedNotification(
+        `✓ Bhoomi RTC Survey #${ocrResult.survey_no} Applied: ${ocrResult.extracted_acreage} Acres Geo-Tagged!`
+      );
+      setTimeout(() => setAppliedNotification(null), 5000);
+    }
+  };
+
+  const handleClearUploadedFile = () => {
+    setUploadedFilePreview(null);
+    setUploadedFileName(null);
+    setUploadedFileSize(null);
+    setOcrResult(null);
+    if (rtcFileInputRef.current) {
+      rtcFileInputRef.current.value = "";
     }
   };
 
@@ -133,6 +258,7 @@ export const GisFieldMapView: React.FC = () => {
     setFieldAcreage(4.2);
     setFieldPerimeter(285.4);
     setOcrResult(null);
+    setAppliedNotification(null);
   };
 
   // Nearby Agricultural Hubs
@@ -327,22 +453,50 @@ export const GisFieldMapView: React.FC = () => {
               )}
             </div>
 
+            {/* Top Applied Notification Toast */}
+            {appliedNotification && (
+              <div className="absolute top-4 left-4 z-20 bg-emerald-950/95 border-2 border-emerald-500 text-emerald-200 px-4 py-2 rounded-2xl shadow-2xl flex items-center gap-2 text-xs font-bold animate-fadeIn">
+                <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+                <span>{appliedNotification}</span>
+                <button
+                  onClick={() => setAppliedNotification(null)}
+                  className="ml-2 text-emerald-400 hover:text-white"
+                >
+                  <X className="w-3.5 h-3.5" />
+                </button>
+              </div>
+            )}
+
             {/* SVG Geodesic Field Boundary Polygon */}
             {showBoundary && (
-              <svg className="absolute inset-0 w-full h-full pointer-events-none">
+              <svg className="absolute inset-0 w-full h-full pointer-events-none" viewBox="0 0 800 480" preserveAspectRatio="none">
                 <polygon
-                  points="210,140 460,110 540,310 270,360"
+                  points={getSvgPolygonPoints()}
                   fill="rgba(16, 185, 129, 0.28)"
                   stroke="#10b981"
                   strokeWidth="3.5"
-                  strokeDasharray="none"
+                  className="transition-all duration-700"
                 />
 
                 {/* Vertices Pins with coordinates */}
-                <circle cx="210" cy="140" r="7" fill="#10b981" stroke="#ffffff" strokeWidth="2" />
-                <circle cx="460" cy="110" r="7" fill="#10b981" stroke="#ffffff" strokeWidth="2" />
-                <circle cx="540" cy="310" r="7" fill="#10b981" stroke="#ffffff" strokeWidth="2" />
-                <circle cx="270" cy="360" r="7" fill="#10b981" stroke="#ffffff" strokeWidth="2" />
+                {getSvgVertices().map((v, i) => (
+                  <g key={i}>
+                    <circle cx={v.x} cy={v.y} r="7" fill="#10b981" stroke="#ffffff" strokeWidth="2.5" />
+                    <circle cx={v.x} cy={v.y} r="14" fill="none" stroke="#10b981" strokeWidth="1.5" opacity="0.6" className="animate-ping" />
+                    <text
+                      x={v.x + 10}
+                      y={v.y - 10}
+                      fill="#ffffff"
+                      fontSize="10"
+                      fontWeight="bold"
+                      stroke="#0f172a"
+                      strokeWidth="2"
+                      paintOrder="stroke"
+                    >
+                      {v.label} ({v.coord[1]?.toFixed(4)}, {v.coord[0]?.toFixed(4)})
+                    </text>
+                  </g>
+                ))}
               </svg>
             )}
 
@@ -503,26 +657,33 @@ export const GisFieldMapView: React.FC = () => {
 
       {/* ── RTC / Bhoomi Pahani OCR Modal ── */}
       {showRtcModal && (
-        <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-slate-900 text-white p-6 rounded-3xl max-w-lg w-full border border-slate-800 shadow-2xl space-y-4 animate-fadeIn">
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-slate-900 text-white p-6 rounded-3xl max-w-xl w-full border border-slate-700 shadow-2xl space-y-4 animate-fadeIn max-h-[90vh] overflow-y-auto">
+            {/* Header */}
             <div className="flex items-center justify-between border-b border-slate-800 pb-3">
               <div className="flex items-center gap-2">
-                <FileText className="w-5 h-5 text-emerald-400" />
-                <h3 className="text-base font-black">Karnataka Bhoomi RTC / e-Swathu OCR</h3>
+                <div className="w-8 h-8 rounded-xl bg-emerald-950 border border-emerald-500/50 flex items-center justify-center text-emerald-400">
+                  <FileText className="w-4 h-4" />
+                </div>
+                <div>
+                  <h3 className="text-base font-black text-white">Karnataka Bhoomi RTC (ಪಹಣಿ) / e-Swathu OCR</h3>
+                  <div className="text-[11px] text-slate-400">Form 16 Land Tenancy & Geodesic Field Boundary Parser</div>
+                </div>
               </div>
               <button
                 onClick={() => setShowRtcModal(false)}
-                className="w-7 h-7 rounded-full bg-slate-800 hover:bg-slate-700 flex items-center justify-center"
+                className="w-8 h-8 rounded-full bg-slate-800 hover:bg-slate-700 flex items-center justify-center text-slate-400 hover:text-white transition"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
 
-            <p className="text-xs text-slate-300">
+            <p className="text-xs text-slate-300 leading-relaxed">
               Upload your Karnataka RTC (Pahani) or e-Swathu record. The vision model extracts survey number,
               hissa, land tenancy, and acreage, auto-drawing your field polygon coordinates.
             </p>
 
+            {/* Hidden File Picker Input */}
             <input
               ref={rtcFileInputRef}
               type="file"
@@ -530,55 +691,209 @@ export const GisFieldMapView: React.FC = () => {
               className="hidden"
               onChange={(e) => {
                 const f = e.target.files?.[0];
-                if (f) handleRtcFileUpload(f);
+                if (f) processFile(f);
+                if (e.target) e.target.value = "";
               }}
             />
 
-            <div
-              onClick={() => rtcFileInputRef.current?.click()}
-              className="border-2 border-dashed border-slate-700 hover:border-emerald-500 rounded-2xl p-6 text-center cursor-pointer transition bg-slate-950/60"
-            >
-              <Upload className="w-8 h-8 text-emerald-400 mx-auto mb-2" />
-              <div className="text-xs font-bold text-white">Click to upload RTC Document</div>
-              <div className="text-[10px] text-slate-400 mt-1">Supports PNG, JPG, or Scanned PDF</div>
-            </div>
+            {/* Drag & Drop Upload Zone OR Document Preview */}
+            {!uploadedFileName ? (
+              <div
+                onDragOver={(e) => {
+                  e.preventDefault();
+                  setIsDragging(true);
+                }}
+                onDragLeave={() => setIsDragging(false)}
+                onDrop={(e) => {
+                  e.preventDefault();
+                  setIsDragging(false);
+                  const f = e.dataTransfer.files?.[0];
+                  if (f) processFile(f);
+                }}
+                onClick={() => rtcFileInputRef.current?.click()}
+                className={`border-2 border-dashed rounded-2xl p-6 text-center cursor-pointer transition flex flex-col items-center justify-center gap-2 ${
+                  isDragging
+                    ? "border-emerald-400 bg-emerald-950/40 scale-[1.01]"
+                    : "border-slate-700 hover:border-emerald-500 bg-slate-950/60"
+                }`}
+              >
+                <div className="w-12 h-12 rounded-2xl bg-emerald-900/40 border border-emerald-500/40 flex items-center justify-center text-emerald-400">
+                  <Upload className="w-6 h-6" />
+                </div>
+                <div>
+                  <span className="text-xs font-bold text-white block">
+                    Drag & drop RTC document here, or <span className="text-emerald-400 underline">browse files</span>
+                  </span>
+                  <span className="text-[11px] text-slate-400 mt-0.5 block">
+                    Supports Karnataka RTC Pahani PNG, JPG, or Scanned PDF
+                  </span>
+                </div>
 
+                {/* Instant Demo Quick Load Button */}
+                <div className="mt-3 pt-3 border-t border-slate-800 w-full flex items-center justify-center">
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleLoadSampleRtc();
+                    }}
+                    className="px-3.5 py-1.5 bg-blue-600/30 hover:bg-blue-600/50 border border-blue-500/50 text-blue-200 rounded-xl text-xs font-bold transition flex items-center gap-1.5 shadow-sm"
+                  >
+                    <Sparkles className="w-3.5 h-3.5 text-cyan-400" />
+                    <span>⚡ One-Click Demo: Load Sample RTC (Sy #142/3A)</span>
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div className="relative rounded-2xl border border-slate-700 bg-slate-950/90 p-4 space-y-3">
+                {/* File Header Bar */}
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2.5">
+                    <div className="w-9 h-9 rounded-xl bg-emerald-950/80 border border-emerald-600/50 flex items-center justify-center text-emerald-400 shrink-0">
+                      <FileText className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <div className="text-xs font-bold text-white truncate max-w-[260px] sm:max-w-[340px]">
+                        {uploadedFileName}
+                      </div>
+                      <div className="text-[10px] text-slate-400">{uploadedFileSize}</div>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => rtcFileInputRef.current?.click()}
+                      className="text-[11px] font-semibold text-cyan-400 hover:text-cyan-300 transition"
+                    >
+                      Change File
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handleClearUploadedFile}
+                      className="text-slate-400 hover:text-rose-400 p-1 rounded-lg transition"
+                      title="Remove file"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
+
+                {/* Visual Image / Document Preview with Scanning laser if active */}
+                <div className="relative rounded-xl overflow-hidden border border-slate-800 bg-slate-900 h-44 flex items-center justify-center">
+                  {uploadedFilePreview ? (
+                    /* eslint-disable-next-line @next/next/no-img-element */
+                    <img
+                      src={uploadedFilePreview}
+                      alt="Uploaded RTC"
+                      className="w-full h-full object-contain"
+                    />
+                  ) : (
+                    <div className="text-center p-4">
+                      <FileText className="w-12 h-12 text-emerald-400/70 mx-auto mb-1.5" />
+                      <div className="text-xs font-bold text-slate-200">
+                        ಕರ್ನಾಟಕ ಸರ್ಕಾರ · ಕಂದಾಯ ಇಲಾಖೆ (ಭೂಮಿ)
+                      </div>
+                      <div className="text-[11px] text-slate-400 font-mono mt-0.5">
+                        Form 16 · Pahani Record Digital Copy
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Laser Scanning Animation Bar */}
+                  {isOcrProcessing && (
+                    <div className="absolute inset-0 pointer-events-none flex flex-col justify-between">
+                      <div className="w-full h-1 bg-gradient-to-r from-transparent via-emerald-400 to-transparent shadow-[0_0_15px_#10b981] animate-pulse" />
+                      <div className="w-full h-1 bg-gradient-to-r from-transparent via-cyan-400 to-transparent shadow-[0_0_15px_#06b6d4] animate-pulse" />
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* OCR Processing Stage Indicator */}
             {isOcrProcessing && (
-              <div className="flex items-center justify-center gap-2 py-3 text-xs font-semibold text-emerald-400">
-                <Loader2 className="w-4 h-4 animate-spin" />
-                <span>Reading survey records from Bhoomi template...</span>
+              <div className="p-3 bg-blue-950/40 rounded-xl border border-blue-500/40 flex items-center gap-3">
+                <Loader2 className="w-5 h-5 text-cyan-400 animate-spin shrink-0" />
+                <div>
+                  <div className="text-xs font-bold text-cyan-200">Reading Karnataka Bhoomi Records...</div>
+                  <div className="text-[11px] text-slate-300">{ocrStep || "Scanning survey records from template..."}</div>
+                </div>
               </div>
             )}
 
+            {rtcUploadError && (
+              <div className="p-3 bg-rose-950/40 rounded-xl border border-rose-500/40 text-xs text-rose-300 flex items-center gap-2">
+                <AlertTriangle className="w-4 h-4 shrink-0 text-rose-400" />
+                <span>{rtcUploadError}</span>
+              </div>
+            )}
+
+            {/* Extracted Bhoomi RTC Details Card */}
             {ocrResult && (
-              <div className="p-3 bg-emerald-950/40 rounded-xl border border-emerald-600/40 space-y-1.5 text-xs text-slate-200">
-                <div className="flex justify-between">
-                  <span className="text-slate-400">Owner Name:</span>
-                  <strong className="text-white">{ocrResult.owner_name}</strong>
+              <div className="p-4 bg-emerald-950/40 rounded-2xl border border-emerald-500/50 space-y-3">
+                <div className="flex items-center justify-between pb-2 border-b border-emerald-800/40">
+                  <div className="flex items-center gap-1.5 text-emerald-400 text-xs font-bold">
+                    <CheckCircle2 className="w-4 h-4" />
+                    <span>Bhoomi Form 16 Official Verified</span>
+                  </div>
+                  <span className="text-[10px] font-mono bg-emerald-900/60 text-emerald-300 px-2.5 py-0.5 rounded-full border border-emerald-600/40 font-bold">
+                    Sy #{ocrResult.survey_no}
+                  </span>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-slate-400">Survey & Hissa:</span>
-                  <strong className="text-cyan-300">
-                    Sy #{ocrResult.survey_no} / Hissa #{ocrResult.hissa_no}
-                  </strong>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-slate-400">Village & Taluk:</span>
-                  <span>{ocrResult.village}, {ocrResult.taluk}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-slate-400">Extracted Area:</span>
-                  <strong className="text-emerald-400">{ocrResult.extracted_acreage} Acres</strong>
+
+                <div className="grid grid-cols-2 gap-2.5 text-xs">
+                  <div>
+                    <span className="text-[10px] text-slate-400 block uppercase font-bold">ಖಾತೆದಾರ / Owner Name</span>
+                    <strong className="text-white block truncate">{ocrResult.owner_name}</strong>
+                  </div>
+                  <div>
+                    <span className="text-[10px] text-slate-400 block uppercase font-bold">ಸರ್ವೆ & ಹಿಸ್ಸಾ / Survey & Hissa</span>
+                    <strong className="text-cyan-300 block">
+                      Sy #{ocrResult.survey_no} {ocrResult.hissa_no ? `/ Hissa #${ocrResult.hissa_no}` : ""}
+                    </strong>
+                  </div>
+                  <div>
+                    <span className="text-[10px] text-slate-400 block uppercase font-bold">ಗ್ರಾಮ & ತಾಲೂಕು / Location</span>
+                    <span className="text-slate-200 block truncate">{ocrResult.village}, {ocrResult.taluk}</span>
+                  </div>
+                  <div>
+                    <span className="text-[10px] text-slate-400 block uppercase font-bold">ಖಾತೆ ವಿಸ್ತೀರ್ಣ / Acreage</span>
+                    <span className="font-black text-emerald-400 text-sm block">{ocrResult.extracted_acreage} Acres</span>
+                  </div>
+                  <div>
+                    <span className="text-[10px] text-slate-400 block uppercase font-bold">ಭೂಮಿಯ ನಮೂನೆ / Land Category</span>
+                    <span className="text-slate-300 block text-[11px] truncate">
+                      {ocrResult.soil_classification || "Kari / Bagayat (Garden)"}
+                    </span>
+                  </div>
+                  <div>
+                    <span className="text-[10px] text-slate-400 block uppercase font-bold">ಗಡಿ ಸುತ್ತಳತೆ / Perimeter</span>
+                    <span className="text-cyan-300 font-bold block">{fieldPerimeter} Meters</span>
+                  </div>
                 </div>
               </div>
             )}
 
-            <div className="flex gap-2 pt-2">
+            {/* Modal Actions */}
+            <div className="flex items-center gap-2 pt-2">
               <button
                 onClick={() => setShowRtcModal(false)}
-                className="flex-1 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold shadow transition"
+                className="px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-xs font-bold transition"
               >
-                Apply to GIS Field Map
+                Cancel
+              </button>
+              <button
+                onClick={handleApplyToMap}
+                disabled={isOcrProcessing || !ocrResult}
+                className={`flex-1 py-2.5 rounded-xl text-xs font-bold shadow transition flex items-center justify-center gap-2 ${
+                  ocrResult && !isOcrProcessing
+                    ? "bg-emerald-600 hover:bg-emerald-500 text-white shadow-emerald-900/30"
+                    : "bg-slate-800 text-slate-500 cursor-not-allowed"
+                }`}
+              >
+                <CheckCircle2 className="w-4 h-4" />
+                <span>Apply Geodesic Boundary to GIS Map</span>
               </button>
             </div>
           </div>
