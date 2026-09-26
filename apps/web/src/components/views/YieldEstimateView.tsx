@@ -35,11 +35,11 @@ export const YieldEstimateView: React.FC = () => {
   const projectedReturnLakhs = ((parseFloat(totalQuintals) * 35800) / 100000).toFixed(1);
 
   const trajectoryData = [
-    { season: "2020 Kharif", actual: 22.4, projected: null, lower: 20.0, upper: 24.5 },
-    { season: "2021 Kharif", actual: 24.1, projected: null, lower: 22.0, upper: 26.0 },
     { season: "2022 Kharif", actual: 23.5, projected: null, lower: 21.0, upper: 25.5 },
-    { season: "2023 Kharif", actual: 26.3, projected: null, lower: 24.5, upper: 28.0 },
-    { season: "2024 Kharif (Est)", actual: null, projected: parseFloat(calculatedYieldPerAcre), lower: 26.5, upper: 30.5 },
+    { season: "2023 Kharif", actual: 24.8, projected: null, lower: 22.5, upper: 26.5 },
+    { season: "2024 Kharif", actual: 26.3, projected: null, lower: 24.5, upper: 28.0 },
+    { season: "2025 Kharif", actual: 27.1, projected: null, lower: 25.2, upper: 29.0 },
+    { season: "2026 Kharif (Est)", actual: null, projected: parseFloat(calculatedYieldPerAcre), lower: 26.5, upper: 30.5 },
   ];
 
   return (

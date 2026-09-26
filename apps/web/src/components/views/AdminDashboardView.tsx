@@ -750,11 +750,11 @@ export const AdminDashboardView: React.FC = () => {
                 </thead>
                 <tbody className="divide-y divide-slate-100 dark:divide-slate-800 font-medium">
                   {(liveEnam?.records || [
-                    { mandi: "Puttur APMC", commodity: "Arecanut", variety: "Chali (Dry)", modal_price: 46200, min_price: 43500, max_price: 48000, trend_pct: 2.1 },
-                    { mandi: "Shivamogga APMC", commodity: "Arecanut", variety: "Rashi", modal_price: 53200, min_price: 49000, max_price: 55000, trend_pct: 3.4 },
-                    { mandi: "Sirsi APMC", commodity: "Arecanut", variety: "Chali", modal_price: 47100, min_price: 44000, max_price: 48500, trend_pct: -0.8 },
-                    { mandi: "Mangaluru Central", commodity: "Black Pepper", variety: "Malabar Garbled", modal_price: 61500, min_price: 58000, max_price: 63000, trend_pct: 1.5 },
-                    { mandi: "Bantwal APMC", commodity: "Coconut", variety: "Grade A Dehusked", modal_price: 2850, min_price: 2600, max_price: 3100, trend_pct: 0.5 },
+                    { mandi: "Shivamogga APMC", commodity: "Arecanut", variety: "A-Grade White Chali", modal_price: 56200, min_price: 53500, max_price: 58200, trend_pct: 4.8 },
+                    { mandi: "Sirsi APMC", commodity: "Arecanut", variety: "Commercial Dry", modal_price: 53800, min_price: 51000, max_price: 55400, trend_pct: 2.6 },
+                    { mandi: "Puttur APMC", commodity: "Arecanut", variety: "Chali (Local)", modal_price: 51000, min_price: 49000, max_price: 52500, trend_pct: 1.5 },
+                    { mandi: "Puttur APMC", commodity: "Black Pepper", variety: "Garbled (Panniyur-1)", modal_price: 66200, min_price: 63000, max_price: 68500, trend_pct: 3.2 },
+                    { mandi: "Bantwal APMC", commodity: "Tender Coconut", variety: "Green Coastal", modal_price: 34, min_price: 28, max_price: 36, trend_pct: 6.5 },
                   ]).map((item: any, i: number) => (
                     <tr key={i} className="hover:bg-slate-50/80 dark:hover:bg-slate-800/40 transition">
                       <td className="p-3 font-bold text-slate-900 dark:text-white">{item.mandi}</td>

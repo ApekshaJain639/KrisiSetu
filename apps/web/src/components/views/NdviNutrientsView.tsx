@@ -149,9 +149,15 @@ export const NdviNutrientsView: React.FC = () => {
           </div>
           <div className="flex items-baseline justify-between">
             <span className="text-2xl font-black text-slate-900 dark:text-white">
-              12 Jun 2024
+              {new Date(Date.now() - 2 * 86400000).toLocaleDateString("en-IN", {
+                day: "2-digit",
+                month: "short",
+                year: "numeric",
+              })}
             </span>
-            <span className="text-[10px] text-slate-500">Sentinel-2A Multispectral</span>
+            <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-bold bg-emerald-50 dark:bg-emerald-950/40 px-2 py-0.5 rounded-full border border-emerald-500/30">
+              Sentinel-2B Pass · 10m Multi-spectral
+            </span>
           </div>
         </div>
       </div>
