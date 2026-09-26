@@ -27,11 +27,17 @@ interface SampleItem {
   id: string;
   label: string;
   disease: string;
+  diseaseKn?: string;
   pathogen: string;
   confidence: number;
   dsi: number;
   rawImg: string;
   heatmapImg: string;
+  targetBBox?: { x: number; y: number; w: number; h: number; label: string };
+  symptoms?: string[];
+  symptomsKn?: string[];
+  vector?: string;
+  urgency?: string;
   chemical: string;
   traditional: string;
   bio: string;
@@ -41,12 +47,26 @@ const SAMPLES: SampleItem[] = [
   {
     id: "koleroga",
     label: "Koleroga (Fruit rot)",
-    disease: "Arecanut Koleroga (Fruit Rot)",
+    disease: "Arecanut Koleroga (Fruit Rot / ಮಹಾಲಿ)",
+    diseaseKn: "ಅಡಿಕೆ ಕೊಳೆರೋಗ (ಮಹಾಲಿ)",
     pathogen: "Phytophthora meadii",
     confidence: 97.4,
     dsi: 38,
-    rawImg: "https://images.unsplash.com/photo-1599818816949-9d7e35b7e289?auto=format&fit=crop&w=600&q=80",
-    heatmapImg: "radial-gradient(circle at 45% 40%, rgba(239, 68, 68, 0.8) 0%, rgba(234, 179, 8, 0.6) 35%, rgba(34, 197, 94, 0.2) 70%, transparent 100%)",
+    rawImg: "/leaves/koleroga.svg",
+    heatmapImg: "radial-gradient(circle at 48% 60%, rgba(239, 68, 68, 0.9) 0%, rgba(234, 179, 8, 0.7) 40%, rgba(34, 197, 94, 0.2) 75%, transparent 100%)",
+    targetBBox: { x: 25, y: 40, w: 52, h: 42, label: "Phytophthora Fruit Rot Focus" },
+    symptoms: [
+      "Water-soaked dark lesions on tender green nuts",
+      "Premature dropping of infected nuts (Koleroga fruit shed)",
+      "White felty fungal mycelium covering stalk and nuts in high humidity"
+    ],
+    symptomsKn: [
+      "ಎಳನೀರು ಅಡಿಕೆಗಳ ಮೇಲೆ ನೀರು ನೆನೆದಂತಹ ಕಪ್ಪು ಕಲೆಗಳು",
+      "ರೋಗಪೀಡಿತ ಅಡಿಕೆಗಳು ಅಕಾಲಿಕವಾಗಿ ಉದುರುವುದು (ಉದುರು ರೋಗ)",
+      "ಅಧಿಕ ತೇವಾಂಶದಲ್ಲಿ ಅಡಿಕೆ ಮತ್ತು ತೊಟ್ಟಿನ ಮೇಲೆ ಬಿಳಿ ಶಿಲೀಂಧ್ರ ಬೆಳವಣಿಗೆ"
+    ],
+    vector: "Rain-splash & wind-blown sporangia during continuous monsoon showers",
+    urgency: "CRITICAL: Immediate spray needed before monsoon downpours peak",
     chemical: "Spray 1% neutral Bordeaux mixture immediately before heavy monsoon downpours. Alternatively, apply Metalaxyl-Mancozeb (2.5 g/liter).",
     traditional: "'Kotte Kattuva' - Securely wrap natural arecanut sheaths (hale) over individual nut bunches to deflect continuous rainwater and prevent water stagnation.",
     bio: "Apply Trichoderma harzianum bio-agent cake enriched in well-decomposed FYM at tree basin (500g/palm).",
@@ -54,25 +74,53 @@ const SAMPLES: SampleItem[] = [
   {
     id: "yellow-leaf",
     label: "Yellow leaf disease",
-    disease: "Arecanut Yellow Leaf Disease (YLD)",
-    pathogen: "Phytoplasma / Nutritional Deficit",
+    disease: "Arecanut Yellow Leaf Disease (YLD / ಹಳದಿ ಎಲೆ ರೋಗ)",
+    diseaseKn: "ಅಡಿಕೆ ಹಳದಿ ಎಲೆ ರೋಗ (YLD)",
+    pathogen: "Candidatus Phytoplasma / 16SrXI-B",
     confidence: 95.8,
     dsi: 28,
-    rawImg: "https://images.unsplash.com/photo-1530595467537-0b5996c41f2d?auto=format&fit=crop&w=600&q=80",
-    heatmapImg: "radial-gradient(circle at 60% 50%, rgba(234, 179, 8, 0.8) 0%, rgba(249, 115, 22, 0.6) 40%, rgba(34, 197, 94, 0.2) 75%, transparent 100%)",
-    chemical: "Soil application of Magnesium Sulphate (MgSO4) @ 150g/palm + Zinc Sulphate @ 50g/palm.",
-    traditional: "Mulching with Glyricidia leaves and applying wood ash (potassium supplement).",
+    rawImg: "/leaves/yellow-leaf.svg",
+    heatmapImg: "radial-gradient(circle at 62% 35%, rgba(234, 179, 8, 0.95) 0%, rgba(249, 115, 22, 0.75) 38%, rgba(220, 38, 38, 0.4) 65%, transparent 90%)",
+    targetBBox: { x: 38, y: 8, w: 56, h: 58, label: "Severe Pinnae Chlorosis Zone" },
+    symptoms: [
+      "Intense golden-yellow chlorosis starting from leaflet tips inward",
+      "Marginal necrosis and drying of outer and inner whorl leaflets",
+      "Stunted crown, root rot, and brittle kernel formation"
+    ],
+    symptomsKn: [
+      "ಗರಿಗಳ ತುದಿಯಿಂದ ಒಳಮುಖವಾಗಿ ಹರಡುವ ತೀವ್ರ ಹಳದಿ ಬಣ್ಣ (ಕ್ಲೋರೋಸಿಸ್)",
+      "ಎಲೆಗಳ ಅಂಚು ಒಣಗುವುದು ಮತ್ತು ತುದಿಯ ಕರಕಲು (ನೆಕ್ರೋಸಿಸ್)",
+      "ಗರಿಗಳ ಬೆಳವಣಿಗೆ ಕುಂಠಿತ ಹಾಗೂ ಬೇರುಗಳ ಕೊಳೆಯುವಿಕೆ"
+    ],
+    vector: "Plant Hopper (Proutista moesta) and root-to-root transmission",
+    urgency: "MODERATE: Soil micro-nutrient correction & vector management required",
+    chemical: "Soil application of Magnesium Sulphate (MgSO4) @ 150g/palm + Zinc Sulphate @ 50g/palm + Borax 25g/palm.",
+    traditional: "Heavy mulching with Glyricidia leaves (12kg/palm) and applying wood ash (high potassium supplement).",
     bio: "Soil inoculation of Arbuscular Mycorrhizal Fungi (AMF) to restore root-uptake function.",
   },
   {
     id: "paddy-blast",
     label: "Paddy blast",
-    disease: "Paddy Leaf Blast",
-    pathogen: "Magnaporthe oryzae",
+    disease: "Paddy Leaf Blast (ಬೆಂಕಿ ರೋಗ)",
+    diseaseKn: "ಭತ್ತದ ಬೆಂಕಿ ರೋಗ (ಬ್ಲಾಸ್ಟ್)",
+    pathogen: "Magnaporthe oryzae (Pyricularia oryzae)",
     confidence: 98.2,
     dsi: 44,
-    rawImg: "https://images.unsplash.com/photo-1586771107445-d3ca888129ff?auto=format&fit=crop&w=600&q=80",
-    heatmapImg: "radial-gradient(circle at 40% 60%, rgba(220, 38, 38, 0.85) 0%, rgba(234, 179, 8, 0.6) 40%, transparent 80%)",
+    rawImg: "/leaves/paddy-blast.svg",
+    heatmapImg: "radial-gradient(circle at 46% 56%, rgba(220, 38, 38, 0.9) 0%, rgba(234, 179, 8, 0.65) 45%, transparent 80%)",
+    targetBBox: { x: 30, y: 40, w: 45, h: 32, label: "Spindle Lesion Cluster" },
+    symptoms: [
+      "Spindle-shaped / diamond lesions with ash-gray center and brown margins",
+      "Coalescing lesions causing complete leaf desiccation and burning appearance",
+      "Neck blast causing unfilled grains and lodging"
+    ],
+    symptomsKn: [
+      "ಬೂದಿ ಬಣ್ಣದ ಮಧ್ಯಭಾಗ ಮತ್ತು ಕಂದು ಅಂಚುಳ್ಳ ಕದಿರಿನಂತಹ ಕಲೆಗಳು",
+      "ಕಲೆಗಳು ಒಂದಕ್ಕೊಂದು ಸೇರಿ ಸಂಪೂರ್ಣ ಎಲೆ ಒಣಗಿ ಸುಟ್ಟಂತೆ ಕಾಣುವುದು",
+      "ತೆನೆ ಕುತ್ತಿಗೆ ಕೊಳೆತು ಕಾಳು ಕಟ್ಟದೆ ಜೊಳ್ಳಾಗುವುದು"
+    ],
+    vector: "Airborne conidial spores flourishing under high relative humidity (>88%)",
+    urgency: "HIGH: Spores spread rapidly across contiguous wetland fields",
     chemical: "Tricyclazole 75 WP @ 0.6 g/liter or Isoprothiolane 40 EC @ 1.5 ml/liter.",
     traditional: "Avoid excessive urea top-dressing during humid periods; drain standing field water for 3 days.",
     bio: "Pseudomonas fluorescens leaf suspension @ 10g/liter water.",
@@ -80,12 +128,26 @@ const SAMPLES: SampleItem[] = [
   {
     id: "early-blight",
     label: "Early blight",
-    disease: "Solanaceous Early Blight",
+    disease: "Solanaceous Early Blight (ಮುಂಚಿತ ಕರಕಲು ರೋಗ)",
+    diseaseKn: "ಮುಂಚಿತ ಕರಕಲು ರೋಗ (ಅಲ್ಟರ್ನೇರಿಯಾ)",
     pathogen: "Alternaria solani",
     confidence: 96.5,
     dsi: 32,
-    rawImg: "https://images.unsplash.com/photo-1592150621744-aca64f48394a?auto=format&fit=crop&w=600&q=80",
-    heatmapImg: "radial-gradient(circle at 55% 45%, rgba(239, 68, 68, 0.8) 0%, rgba(245, 158, 11, 0.5) 50%, transparent 90%)",
+    rawImg: "/leaves/early-blight.svg",
+    heatmapImg: "radial-gradient(circle at 52% 28%, rgba(239, 68, 68, 0.9) 0%, rgba(245, 158, 11, 0.6) 45%, transparent 85%)",
+    targetBBox: { x: 48, y: 15, w: 32, h: 40, label: "Target-Board Concentric Rings" },
+    symptoms: [
+      "Characteristic circular to angular dark brown target-board concentric rings",
+      "Surrounding chlorotic yellow halos on bottom foliage",
+      "Progressive lower-to-upper leaf defoliation and stem cankers"
+    ],
+    symptomsKn: [
+      "ವೃತ್ತಾಕಾರದ ಕಂದು ಬಣ್ಣದ ಸಾಂದ್ರ ವಲಯಗಳು (ಟಾರ್ಗೆಟ್ ಬೋರ್ಡ್ ಕಲೆಗಳು)",
+      "ಕಲೆಗಳ ಸುತ್ತ ಹಳದಿ ಬಣ್ಣದ ಪ್ರಭಾವಲಯ",
+      "ಕೆಳಗಿನ ಎಲೆಗಳು ಉದುರಿ ಕಾಂಡಕ್ಕೆ ಕಲೆಗಳು ಹರಡುವುದು"
+    ],
+    vector: "Soil-borne conidia splashing via raindrop impact onto lower canopy leaves",
+    urgency: "MODERATE: Prune lower leaves up to 30cm to arrest rain-splash cycle",
     chemical: "Chlorothalonil 75 WP @ 2g/liter or Mancozeb 75 WP @ 2.5g/liter.",
     traditional: "Pruning infected bottom leaves up to 30cm above soil line to prevent splash dispersal.",
     bio: "Bacillus subtilis foliar biopesticide spray @ 5ml/liter.",
@@ -464,19 +526,24 @@ export const LeafScanView: React.FC = () => {
               <span>Opacity: {heatmapOpacity}%</span>
             </div>
 
-            <div className="relative w-full h-56 rounded-xl overflow-hidden border border-slate-200 dark:border-krishi-darkborder bg-slate-900 shadow-inner">
-              {/* Base image — user upload preview or sample */}
-              <div
-                className="absolute inset-0 bg-cover bg-center transition-all duration-500 filter contrast-125"
-                style={{ backgroundImage: `url(${displayImage})` }}
+            <div className="relative w-full h-64 sm:h-72 rounded-xl overflow-hidden border border-slate-200 dark:border-krishi-darkborder bg-slate-950 shadow-inner group">
+              {/* Base image — user upload preview or authentic botanical SVG */}
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={displayImage}
+                alt={activeSample.disease}
+                className="w-full h-full object-cover transition-all duration-300"
               />
 
               {/* Scanning overlay */}
               {(isScanning || isAnalyzing) && (
-                <div className="absolute inset-0 bg-black/50 flex flex-col items-center justify-center gap-2">
-                  <ScanLine className="w-8 h-8 text-krishi-gold animate-pulse" />
-                  <span className="text-xs text-white font-bold">
-                    {language === "kn" ? "AI ಸ್ಕ್ಯಾನ್..." : "AI Scanning..."}
+                <div className="absolute inset-0 bg-black/65 flex flex-col items-center justify-center gap-2 backdrop-blur-sm z-20">
+                  <ScanLine className="w-10 h-10 text-krishi-gold animate-pulse" />
+                  <span className="text-xs text-white font-bold tracking-wide">
+                    {language === "kn" ? "AI ರೋಗಪತ್ತೆ ಸ್ಕ್ಯಾನ್ ಪ್ರಕ್ರಿಯೆ..." : "AI Vision Pathology Inference..."}
+                  </span>
+                  <span className="text-[10px] text-emerald-300 font-mono">
+                    PyTorch EfficientNetV2 + Grad-CAM Heatmap
                   </span>
                 </div>
               )}
@@ -484,35 +551,87 @@ export const LeafScanView: React.FC = () => {
               {/* Grad-CAM Heatmap overlay */}
               {!isScanning && !isAnalyzing && (
                 <div
-                  className="absolute inset-0 pointer-events-none transition-opacity duration-200 mix-blend-screen"
+                  className="absolute inset-0 pointer-events-none transition-opacity duration-200 mix-blend-screen z-10"
                   style={{ background: activeSample.heatmapImg, opacity: heatmapOpacity / 100 }}
                 />
               )}
 
+              {/* AI Detection Bounding Box on Focal Hotspot */}
+              {!isScanning && !isAnalyzing && activeSample.targetBBox && heatmapOpacity > 15 && (
+                <div
+                  className="absolute border-2 border-dashed border-amber-400/90 rounded-lg pointer-events-none z-15 transition-all duration-300"
+                  style={{
+                    left: `${activeSample.targetBBox.x}%`,
+                    top: `${activeSample.targetBBox.y}%`,
+                    width: `${activeSample.targetBBox.w}%`,
+                    height: `${activeSample.targetBBox.h}%`,
+                    boxShadow: "0 0 16px rgba(251, 191, 36, 0.4)",
+                  }}
+                >
+                  <div className="absolute -top-6 left-0 bg-slate-950/95 text-amber-300 text-[10px] font-mono px-2 py-0.5 rounded border border-amber-400/50 flex items-center gap-1 shadow-md whitespace-nowrap">
+                    <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-ping"></span>
+                    <span>{activeSample.confidence.toFixed(1)}% {activeSample.targetBBox.label}</span>
+                  </div>
+                </div>
+              )}
+
               {/* Model badge */}
-              <div className="absolute bottom-3 left-3 bg-black/70 backdrop-blur-md px-3 py-1 rounded-lg text-[10px] text-white font-mono flex items-center gap-1.5 border border-white/20">
-                <span className="w-2 h-2 rounded-full bg-rose-500 animate-pulse" />
+              <div className="absolute bottom-3 left-3 bg-black/75 backdrop-blur-md px-3 py-1 rounded-lg text-[10px] text-white font-mono flex items-center gap-1.5 border border-white/20 z-10">
+                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
                 Grad-CAM XAI: PyTorch EfficientNetV2
               </div>
 
               {/* User photo badge */}
               {hasUserScan && (
-                <div className="absolute top-3 right-3 bg-krishi-600/90 px-2 py-1 rounded-lg text-[10px] text-white font-bold flex items-center gap-1">
+                <div className="absolute top-3 right-3 bg-krishi-600/90 px-2.5 py-1 rounded-lg text-[10px] text-white font-bold flex items-center gap-1 z-10 shadow">
                   <ImageIcon className="w-3 h-3" />
-                  Your Photo
+                  Your Uploaded Photo
                 </div>
               )}
             </div>
 
             {/* Opacity slider */}
-            <input
-              type="range"
-              min="0"
-              max="100"
-              value={heatmapOpacity}
-              onChange={(e) => setHeatmapOpacity(parseInt(e.target.value))}
-              className="w-full accent-krishi-600 cursor-pointer"
-            />
+            <div className="pt-1">
+              <input
+                type="range"
+                min="0"
+                max="100"
+                value={heatmapOpacity}
+                onChange={(e) => setHeatmapOpacity(parseInt(e.target.value))}
+                className="w-full accent-krishi-600 cursor-pointer"
+              />
+            </div>
+          </div>
+
+          {/* Clinical Symptoms & Diagnostic Analysis Card */}
+          <div className="p-4 bg-amber-50/70 dark:bg-amber-950/25 border border-amber-200/80 dark:border-amber-900/40 rounded-xl space-y-2.5">
+            <div className="flex items-center justify-between">
+              <h5 className="text-xs font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
+                <AlertTriangle className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
+                <span>{language === "kn" ? "ಪತ್ತೆಯಾದ ರೋಗ ಲಕ್ಷಣಗಳು & ವಿಶ್ಲೇಷಣೆ" : "Detected Symptoms & Clinical Analysis"}</span>
+              </h5>
+              <span className="text-[10px] font-bold text-amber-900 dark:text-amber-200 bg-amber-200/70 dark:bg-amber-900/60 px-2 py-0.5 rounded-full border border-amber-300 dark:border-amber-800">
+                {activeSample.urgency}
+              </span>
+            </div>
+
+            <ul className="space-y-1.5 text-xs text-slate-700 dark:text-slate-300">
+              {(language === "kn" ? (activeSample.symptomsKn || activeSample.symptoms) : activeSample.symptoms)?.map((sym, idx) => (
+                <li key={idx} className="flex items-start gap-2">
+                  <span className="text-amber-600 dark:text-amber-400 font-bold mt-0.5">•</span>
+                  <span>{sym}</span>
+                </li>
+              ))}
+            </ul>
+
+            {activeSample.vector && (
+              <div className="pt-2 border-t border-amber-200/60 dark:border-amber-900/40 flex flex-wrap items-center justify-between gap-1 text-[11px]">
+                <span className="text-slate-600 dark:text-slate-400 font-medium">
+                  {language === "kn" ? "ರೋಗ ವಾಹಕ / ಹರಡುವಿಕೆ (Vector):" : "Disease Vector / Transmission:"}
+                </span>
+                <span className="font-bold text-amber-950 dark:text-amber-200">{activeSample.vector}</span>
+              </div>
+            )}
           </div>
 
           {/* Remedy Tabs */}

@@ -1,0 +1,154 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400" width="100%" height="100%">
+  <defs>
+    <!-- Background field gradient -->
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#142c1b"/>
+      <stop offset="50%" stop-color="#1b3823"/>
+      <stop offset="100%" stop-color="#0f2115"/>
+    </linearGradient>
+
+    <!-- Healthy to Chlorotic Yellow Leaf Gradient -->
+    <linearGradient id="chlorosisGrad1" x1="0%" y1="50%" x2="100%" y2="50%">
+      <stop offset="0%" stop-color="#2d6a4f"/>
+      <stop offset="35%" stop-color="#52b788"/>
+      <stop offset="65%" stop-color="#e9c46a"/>
+      <stop offset="85%" stop-color="#f4a261"/>
+      <stop offset="100%" stop-color="#9a3412"/>
+    </linearGradient>
+
+    <linearGradient id="chlorosisGrad2" x1="10%" y1="0%" x2="90%" y2="100%">
+      <stop offset="0%" stop-color="#386641"/>
+      <stop offset="40%" stop-color="#6a994e"/>
+      <stop offset="70%" stop-color="#e9c46a"/>
+      <stop offset="90%" stop-color="#e76f51"/>
+      <stop offset="100%" stop-color="#7f1d1d"/>
+    </linearGradient>
+
+    <linearGradient id="rachisGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#2d5032"/>
+      <stop offset="50%" stop-color="#8a9a5b"/>
+      <stop offset="100%" stop-color="#d4a373"/>
+    </linearGradient>
+
+    <!-- Necrotic spot pattern -->
+    <radialGradient id="necroticSpot" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#451a03"/>
+      <stop offset="60%" stop-color="#78350f"/>
+      <stop offset="85%" stop-color="#d97706"/>
+      <stop offset="100%" stop-color="#fbbf24" stop-opacity="0"/>
+    </radialGradient>
+
+    <!-- Subtle texture filter -->
+    <filter id="leafTexture" x="0%" y="0%" width="100%" height="100%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.04" numOctaves="3" result="noise"/>
+      <feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 0.08 0" in="noise" result="coloredNoise"/>
+      <feComposite in="SourceGraphic" in2="coloredNoise" operator="over"/>
+    </filter>
+  </defs>
+
+  <!-- Background Canvas -->
+  <rect width="600" height="400" fill="url(#bgGrad)"/>
+  
+  <!-- Subtle plantation background silhouette -->
+  <path d="M-20,400 Q150,220 320,400 T620,400 L600,400 L0,400 Z" fill="#0d1f13" opacity="0.6"/>
+
+  <!-- Field Diagnosis Grid Overlay -->
+  <g opacity="0.15" stroke="#4ade80" stroke-width="0.5">
+    <line x1="150" y1="0" x2="150" y2="400"/>
+    <line x1="300" y1="0" x2="300" y2="400"/>
+    <line x1="450" y1="0" x2="450" y2="400"/>
+    <line x1="0" y1="133" x2="600" y2="133"/>
+    <line x1="0" y1="266" x2="600" y2="266"/>
+  </g>
+
+  <!-- Main Arecanut Frond (Compound Palm Leaf Structure) -->
+  <g filter="url(#leafTexture)" transform="translate(10, 20)">
+    <!-- Central Rachis (Stem) -->
+    <path d="M 40,320 Q 220,240 550,110" stroke="url(#rachisGrad)" stroke-width="8" stroke-linecap="round" fill="none"/>
+    <path d="M 40,320 Q 220,240 550,110" stroke="#fef08a" stroke-width="2" stroke-linecap="round" opacity="0.3" fill="none"/>
+
+    <!-- Left/Upper Pinnae (Leaflets) showing progressive chlorosis -->
+    <!-- Leaflet 1 (Basal - Mildly healthy green) -->
+    <path d="M 90,300 C 100,230 110,170 115,130 C 122,175 125,240 115,290 Z" fill="url(#chlorosisGrad1)"/>
+    <path d="M 102,295 L 115,130" stroke="#166534" stroke-width="1" opacity="0.6"/>
+
+    <!-- Leaflet 2 (Green with yellow margin) -->
+    <path d="M 140,280 C 160,200 175,140 185,90 C 193,145 190,215 170,270 Z" fill="url(#chlorosisGrad1)"/>
+    <path d="M 155,275 L 185,90" stroke="#15803d" stroke-width="1" opacity="0.6"/>
+
+    <!-- Leaflet 3 (Moderate chlorosis - yellow band) -->
+    <path d="M 200,255 C 225,170 250,110 265,60 C 272,120 265,190 235,245 Z" fill="url(#chlorosisGrad2)"/>
+    <path d="M 218,250 L 265,60" stroke="#b45309" stroke-width="1.2" opacity="0.7"/>
+
+    <!-- Leaflet 4 (Severe chlorosis - intense golden yellow + tip burn) -->
+    <path d="M 265,230 C 300,145 330,85 350,40 C 356,100 345,170 305,220 Z" fill="url(#chlorosisGrad2)"/>
+    <path d="M 285,225 L 350,40" stroke="#92400e" stroke-width="1.2" opacity="0.8"/>
+    <!-- Necrotic tip -->
+    <circle cx="348" cy="45" r="9" fill="url(#necroticSpot)"/>
+
+    <!-- Leaflet 5 (Severe Chlorosis with tip necrosis) -->
+    <path d="M 335,200 C 375,120 410,70 435,30 C 440,85 425,150 380,190 Z" fill="url(#chlorosisGrad2)"/>
+    <path d="M 358,195 L 435,30" stroke="#78350f" stroke-width="1.2" opacity="0.8"/>
+    <circle cx="432" cy="35" r="11" fill="url(#necroticSpot)"/>
+
+    <!-- Leaflet 6 (Terminal leaflets - severe chlorosis and desiccated tips) -->
+    <path d="M 405,170 C 450,105 485,60 510,35 C 512,80 495,135 450,160 Z" fill="url(#chlorosisGrad2)"/>
+    <circle cx="505" cy="40" r="10" fill="url(#necroticSpot)"/>
+
+    <!-- Right/Lower Pinnae (Leaflets) -->
+    <!-- Leaflet Lower 1 -->
+    <path d="M 120,305 C 140,340 165,365 190,380 C 175,355 155,330 135,300 Z" fill="url(#chlorosisGrad1)"/>
+    <!-- Leaflet Lower 2 -->
+    <path d="M 180,285 C 215,325 250,355 285,375 C 265,340 235,305 200,275 Z" fill="url(#chlorosisGrad1)"/>
+    <!-- Leaflet Lower 3 (Yellow chlorotic margins) -->
+    <path d="M 245,260 C 290,305 335,340 375,360 C 350,320 310,280 270,250 Z" fill="url(#chlorosisGrad2)"/>
+    <!-- Leaflet Lower 4 (Chlorosis + necrotic margins) -->
+    <path d="M 315,230 C 365,275 415,310 460,335 C 430,290 385,250 340,220 Z" fill="url(#chlorosisGrad2)"/>
+    <circle cx="455" cy="330" r="12" fill="url(#necroticSpot)"/>
+    <!-- Leaflet Lower 5 -->
+    <path d="M 385,200 C 440,245 490,275 535,295 C 505,255 455,220 410,190 Z" fill="url(#chlorosisGrad2)"/>
+    <circle cx="530" cy="290" r="10" fill="url(#necroticSpot)"/>
+
+    <!-- Terminal frond tip -->
+    <path d="M 480,140 C 530,105 570,80 590,70 C 575,100 540,125 500,135 Z" fill="url(#chlorosisGrad2)"/>
+    <circle cx="585" cy="73" r="8" fill="url(#necroticSpot)"/>
+  </g>
+
+  <!-- Pathology Annotation Elements (Clinical Botanical Overlays) -->
+  <!-- Bounding Box for Detected Chlorosis Zone -->
+  <g stroke="#eab308" stroke-width="1.8" fill="none" stroke-dasharray="4,3">
+    <rect x="230" y="25" width="340" height="230" rx="8"/>
+  </g>
+  
+  <!-- Detection Corner Markers -->
+  <g stroke="#f59e0b" stroke-width="3" fill="none">
+    <path d="M 230,45 L 230,25 L 250,25"/>
+    <path d="M 550,25 L 570,25 L 570,45"/>
+    <path d="M 570,235 L 570,255 L 550,255"/>
+    <path d="M 250,255 L 230,255 L 230,235"/>
+  </g>
+
+  <!-- Detection Tag Pin -->
+  <g transform="translate(230, 25)">
+    <rect x="0" y="-22" width="220" height="22" rx="4" fill="#0f172a" opacity="0.9"/>
+    <circle cx="10" cy="-11" r="4" fill="#eab308"/>
+    <text x="20" y="-6" fill="#fef08a" font-family="system-ui, sans-serif" font-size="11" font-weight="bold">
+      YLD Chlorosis Cluster · 95.8%
+    </text>
+  </g>
+
+  <!-- Pathology pointer line to necrotic tip -->
+  <g stroke="#ef4444" stroke-width="1.5">
+    <line x1="432" y1="55" x2="432" y2="95"/>
+    <circle cx="432" cy="55" r="3" fill="#ef4444"/>
+    <rect x="360" y="95" width="145" height="20" rx="3" fill="#450a0a" stroke="#dc2626" stroke-width="1"/>
+    <text x="368" y="109" fill="#fca5a5" font-family="system-ui, sans-serif" font-size="10" font-weight="bold">
+      Tip Dieback (Necrosis)
+    </text>
+  </g>
+
+  <!-- Specimen Reference Watermark -->
+  <text x="20" y="385" fill="#86efac" opacity="0.6" font-family="monospace" font-size="10">
+    SAMPLE: ARECANUT_YLD_ICAR_CPCRI_DK_2026
+  </text>
+</svg>

@@ -1,0 +1,77 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400" width="100%" height="100%">
+  <defs>
+    <linearGradient id="pBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0e2316"/>
+      <stop offset="100%" stop-color="#05130b"/>
+    </linearGradient>
+
+    <!-- Paddy leaf blade gradient -->
+    <linearGradient id="paddyBlade" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#4ade80"/>
+      <stop offset="30%" stop-color="#22c55e"/>
+      <stop offset="70%" stop-color="#16a34a"/>
+      <stop offset="100%" stop-color="#15803d"/>
+    </linearGradient>
+
+    <!-- Spindle-shaped blast lesion gradient (Gray center, brown margin, yellow halo) -->
+    <radialGradient id="blastLesion" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#e2e8f0"/>
+      <stop offset="45%" stop-color="#94a3b8"/>
+      <stop offset="75%" stop-color="#78350f"/>
+      <stop offset="90%" stop-color="#d97706"/>
+      <stop offset="100%" stop-color="#ca8a04" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <rect width="600" height="400" fill="url(#pBg)"/>
+
+  <!-- Multiple Paddy Leaves in field -->
+  <!-- Background leaves -->
+  <path d="M 50,420 Q 200,200 480,80" stroke="#14532d" stroke-width="45" fill="none" opacity="0.4"/>
+  <path d="M 120,420 Q 320,180 560,40" stroke="#166534" stroke-width="50" fill="none" opacity="0.6"/>
+
+  <!-- Primary Diseased Paddy Leaf Blade crossing center -->
+  <g>
+    <path d="M -20,380 C 180,260 380,180 620,110" stroke="url(#paddyBlade)" stroke-width="72" stroke-linecap="round" fill="none"/>
+    <!-- Central leaf midrib -->
+    <path d="M -20,380 C 180,260 380,180 620,110" stroke="#86efac" stroke-width="2.5" fill="none" opacity="0.7"/>
+
+    <!-- Typical Spindle-Shaped Blast Lesions (Magnaporthe oryzae) -->
+    <!-- Lesion 1 (Main focal lesion) -->
+    <ellipse cx="280" cy="225" rx="38" ry="12" fill="url(#blastLesion)" transform="rotate(-20, 280, 225)"/>
+    <ellipse cx="280" cy="225" rx="20" ry="6" fill="#cbd5e1" transform="rotate(-20, 280, 225)"/>
+
+    <!-- Lesion 2 (Secondary diamond lesion) -->
+    <ellipse cx="370" cy="190" rx="30" ry="10" fill="url(#blastLesion)" transform="rotate(-20, 370, 190)"/>
+
+    <!-- Lesion 3 (Coalescing lesion) -->
+    <ellipse cx="200" cy="260" rx="26" ry="9" fill="url(#blastLesion)" transform="rotate(-20, 200, 260)"/>
+
+    <!-- Lesion 4 (Early spot) -->
+    <ellipse cx="440" cy="165" rx="18" ry="6" fill="url(#blastLesion)" transform="rotate(-20, 440, 165)"/>
+  </g>
+
+  <!-- Bounding Box Annotation -->
+  <g stroke="#f97316" stroke-width="2" fill="none" stroke-dasharray="4,3">
+    <rect x="180" y="160" width="260" height="120" rx="8"/>
+  </g>
+  <g stroke="#ea580c" stroke-width="3" fill="none">
+    <path d="M 180,180 L 180,160 L 200,160"/>
+    <path d="M 420,160 L 440,160 L 440,180"/>
+    <path d="M 440,260 L 440,280 L 420,280"/>
+    <path d="M 200,280 L 180,280 L 180,260"/>
+  </g>
+
+  <!-- AI Detection Tag -->
+  <g transform="translate(180, 160)">
+    <rect x="0" y="-22" width="240" height="22" rx="4" fill="#0f172a" opacity="0.9"/>
+    <circle cx="10" cy="-11" r="4" fill="#f97316"/>
+    <text x="20" y="-6" fill="#fed7aa" font-family="system-ui, sans-serif" font-size="11" font-weight="bold">
+      Spindle Blast Lesion · 98.2%
+    </text>
+  </g>
+
+  <text x="20" y="385" fill="#86efac" opacity="0.6" font-family="monospace" font-size="10">
+    SAMPLE: PADDY_BLAST_MO4_KVK_MANGALURU_2026
+  </text>
+</svg>

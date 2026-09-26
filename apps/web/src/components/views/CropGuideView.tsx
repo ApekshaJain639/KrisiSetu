@@ -13,6 +13,10 @@ import {
   DollarSign,
   Package,
   HelpCircle,
+  X,
+  BookOpen,
+  Sparkles,
+  ShieldCheck,
 } from "lucide-react";
 import { useFarmStore } from "@/stores/useFarmStore";
 import { useTranslation } from "@/lib/i18n/translations";
@@ -34,6 +38,7 @@ export const CropGuideView: React.FC = () => {
     longitude,
     setSoilParams,
     setActiveTab,
+    setCopilotOpen,
   } = useFarmStore();
 
   const t = useTranslation(language);
@@ -81,6 +86,20 @@ export const CropGuideView: React.FC = () => {
       cultivars: "Mangala / Mohitnagar / Panniyur-1 Pepper",
       sowing: { earliest: "01 Jun", optimal: "15 Jun - 25 Jun", cutoff: "15 Jul" },
       companion: "Cowpea green manure (N-fixing) + Marigold border (nematode control)",
+      guidePop: {
+        spacing: "2.7m × 2.7m (500–550 palms/acre) · Pepper: 45cm at base of trunk on north side",
+        spacingKn: "ಅಡಿಕೆ: 2.7 ಮೀ × 2.7 ಮೀ (ಎಕರೆಗೆ 500-550 ಸಸಿಗಳು) · ಕರಿಮೆಣಸು: ಅಡಿಕೆ ಮರದ ಬುಡದಿಂದ 45 ಸೆಂ.ಮೀ ಉತ್ತರದಲ್ಲಿ",
+        pitPrep: "60cm × 60cm × 60cm pits filled with topsoil, 10kg well-rotted FYM, and 200g rock phosphate",
+        pitPrepKn: "60 ಸೆಂ.ಮೀ × 60 ಸೆಂ.ಮೀ × 60 ಸೆಂ.ಮೀ ಗುಂಡಿಗಳಿಗೆ ಮೇಲ್ಮಣ್ಣು + 10 ಕೆಜಿ ಕಾಂಪೋಸ್ಟ್ + 200 ಗ್ರಾಂ ರಾಕ್ ಫಾಸ್ಫೇಟ್",
+        irrigationProtocol: "Drip irrigation @ 16-20 L/palm/day (Dec to May). Pepper: 4 L/vine/day. Complete rain lockout during heavy SW monsoon.",
+        irrigationProtocolKn: "ಬೇಸಿಗೆಯಲ್ಲಿ (ಡಿಸೆಂಬರ್-ಮೇ) ಹನಿ ನೀರಾವರಿ ಮೂಲಕ 16-20 ಲೀ/ಗಿಡಕ್ಕೆ ದಿನಕ್ಕೆ. ಕರಿಮೆಣಸಿಗೆ 4 ಲೀ/ದಿನ. ಮುಂಗಾರು ಮಳೆಯ ಸಮಯದಲ್ಲಿ ನೀರಾವರಿ ಸ್ಥಗಿತ.",
+        pestControl: "1% neutral Bordeaux mixture spray in late May & July against Koleroga fruit rot. Trichoderma soil drench (50g/vine) against Pepper Quick-Wilt.",
+        pestControlKn: "ಕೊಳೆರೋಗ ತಡೆಗಟ್ಟಲು ಮೇ ಅಂತ್ಯ ಮತ್ತು ಜುಲೈನಲ್ಲಿ 1% ಬೋರ್ಡೋ ದ್ರಾವಣ ಸಿಂಪಡಣೆ. ಕರಿಮೆಣಸಿನ ಸೊರಗು ರೋಗಕ್ಕೆ ಟ್ರೈಕೋಡರ್ಮಾ (50 ಗ್ರಾಂ/ಬಳ್ಳಿ) ಮಣ್ಣಿಗೆ ಸೇರಿಸಿ.",
+        harvesting: "Chali areca harvest: Dec to Feb. Sun-drying on tarpaulin for 45 days. Pepper harvested when 1-2 berries turn red on the spike.",
+        harvestingKn: "ಚಾಲಿ ಅಡಿಕೆ ಕೊಯ್ಲು: ಡಿಸೆಂಬರ್-ಫೆಬ್ರವರಿ. ಟಾರ್ಪಲಿನ್ ಮೇಲೆ 45 ದಿನ ಬಿಸಿಲಿನಲ್ಲಿ ಒಣಗಿಸಿ. ಮೆಣಸಿನ ಗೊಂಚಲಿನಲ್ಲಿ 1-2 ಕಾಳು ಕೆಂಪಾದಾಗ ಕೊಯ್ಲು.",
+        economicsSummary: "Arecanut Chali: 25-28 Q/acre @ ₹38,000/Q + Pepper 400 kg @ ₹620/kg. Projected gross: ₹12.5L / 4.2 acres. Net: ₹2.8L/acre/year.",
+        economicsSummaryKn: "ಚಾಲಿ ಅಡಿಕೆ: 25-28 ಕ್ವಿಂಟಾಲ್/ಎಕರೆಗೆ ₹38,000 ದರ + ಕರಿಮೆಣಸು 400 ಕೆಜಿ @ ₹620/ಕೆಜಿ. 4.2 ಎಕರೆಗೆ ಒಟ್ಟು ₹12.5 ಲಕ್ಷ. ನಿವ್ವಳ ಲಾಭ: ₹2.8 ಲಕ್ಷ/ಎಕರೆ/ವರ್ಷ.",
+      },
     },
     {
       id: "coconut-cocoa",
@@ -99,6 +118,20 @@ export const CropGuideView: React.FC = () => {
       cultivars: "Arasampatti / DxA Hybrid / Forastero Cocoa",
       sowing: { earliest: "15 May", optimal: "05 Jun - 20 Jun", cutoff: "30 Jun" },
       companion: "Stylosanthes leguminous cover crop",
+      guidePop: {
+        spacing: "Coconut: 7.5m × 7.5m (70 palms/acre) · Cocoa: Single hedge 3.0m in interspaces (200 trees/acre)",
+        spacingKn: "ತೆಂಗು: 7.5 ಮೀ × 7.5 ಮೀ (ಎಕರೆಗೆ 70 ಮರಗಳು) · ಕೋಕೋ: ತೆಂಗಿನ ಸಾಲುಗಳ ನಡುವೆ 3.0 ಮೀ ಅಂತರದಲ್ಲಿ (ಎಕರೆಗೆ 200 ಗಿಡಗಳು)",
+        pitPrep: "1m × 1m × 1m pits layered with coconut husks at bottom for moisture conservation + 25kg FYM",
+        pitPrepKn: "1 ಮೀ × 1 ಮೀ × 1 ಮೀ ಗುಂಡಿಗಳ ತಳದಲ್ಲಿ ತೇವಾಂಶ ಸಂರಕ್ಷಣೆಗಾಗಿ ತೆಂಗಿನ ಸಿಪ್ಪೆಗಳ ಪದರ + 25 ಕೆಜಿ ಕಾಂಪೋಸ್ಟ್",
+        irrigationProtocol: "Drip or basin irrigation @ 35-40 L/palm/day. Cocoa: Micro-sprinkler 8 L/plant every alternate day.",
+        irrigationProtocolKn: "ಹನಿ ನೀರಾವರಿ ಮೂಲಕ 35-40 ಲೀಟರ್/ತೆಂಗಿನ ಮರಕ್ಕೆ ದಿನಕ್ಕೆ. ಕೋಕೋ ಗಿಡಗಳಿಗೆ ದಿನಬಿಟ್ಟು ದಿನ 8 ಲೀಟರ್ ಸೂಕ್ಷ್ಮ ತುಂತುರು ನೀರು.",
+        pestControl: "Rhinoceros beetle pheromone traps + Cocoa black pod rot (Phytophthora) prophylactic 1% Bordeaux spray in June.",
+        pestControlKn: "ತೆಂಗಿನ ಕಪ್ಪು ಮೂತಿ ದುಂಬಿ ಮತ್ತು ಕೋಕೋ ಕಾಯಿ ಕೊಳೆ ರೋಗ ತಡೆಗಟ್ಟಲು ಫೆರೋಮೋನ್ ಬಲೆ ಹಾಗೂ ಜೂನ್‌ನಲ್ಲಿ 1% ಬೋರ್ಡೋ ಸಿಂಪಡಣೆ.",
+        harvesting: "Year-round monthly coconut harvesting (80-100 nuts/palm/year). Cocoa pods harvested when turn deep orange-yellow.",
+        harvestingKn: "ವರ್ಷವಿಡೀ ಮಾಸಿಕ ತೆಂಗಿನಕಾಯಿ ಕಟಾವು (ವರ್ಷಕ್ಕೆ 80-100 ಕಾಯಿ/ಮರ). ಕೋಕೋ ಕಾಯಿಗಳು ಕಿತ್ತಳೆ-ಹಳದಿ ಬಣ್ಣಕ್ಕೆ ತಿರುಗಿದಾಗ ಕಟಾವು.",
+        economicsSummary: "Coconut: 6,000 nuts/acre @ ₹25/nut = ₹1.5L + Cocoa 800 kg wet beans @ ₹90/kg = ₹72,000. Net: ₹1.9L/acre/year.",
+        economicsSummaryKn: "ತೆಂಗು: 6,000 ಕಾಯಿ/ಎಕರೆಗೆ @ ₹25/ಕಾಯಿ = ₹1.5 ಲಕ್ಷ + ಕೋಕೋ 800 ಕೆಜಿ ಬೀಜ = ₹72,000. ನಿವ್ವಳ ಲಾಭ: ₹1.9 ಲಕ್ಷ/ಎಕರೆ/ವರ್ಷ.",
+      },
     },
     {
       id: "paddy-basmati",
@@ -117,6 +150,20 @@ export const CropGuideView: React.FC = () => {
       cultivars: "MO-4 (Bhadra), Jaya, Basmati 1509",
       sowing: { earliest: "25 May", optimal: "10 Jun - 20 Jun", cutoff: "05 Jul" },
       companion: "Green gram (Phaseolus aureus) post-harvest rotation",
+      guidePop: {
+        spacing: "System of Rice Intensification (SRI): 25cm × 25cm single seedling transplanting at 14 days",
+        spacingKn: "ಶ್ರೀ (SRI) ಪದ್ಧತಿ: 25 ಸೆಂ.ಮೀ × 25 ಸೆಂ.ಮೀ ಅಂತರದಲ್ಲಿ 14 ದಿನಗಳ ಒಂದು ಸಸಿ ನಾಟಿ",
+        pitPrep: "Puddling wetland with cage wheel tractor + incorporation of 5 tonnes/acre green sunnhemp manure",
+        pitPrepKn: "ಕೇಜ್ ವೀಲ್ ಟ್ರ್ಯಾಕ್ಟರ್‌ನಿಂದ ಕೆಸರು ಗದ್ದೆ ಹದಗೊಳಿಸುವುದು + ಎಕರೆಗೆ 5 ಟನ್ ಸೆಣಬಿನ ಹಸಿರೆಲೆ ಗೊಬ್ಬರ ಸೇರಿಸುವುದು",
+        irrigationProtocol: "Alternate wetting and drying (AWD) protocol up to panicle initiation, then maintain 2-3 cm standing water.",
+        irrigationProtocolKn: "ತೆನೆ ಮೂಡುವವರೆಗೆ ತೇವ-ಒಣ ಪರ್ಯಾಯ ಪದ್ಧತಿ (AWD), ನಂತರ ಗದ್ದೆಯಲ್ಲಿ 2-3 ಸೆಂ.ಮೀ ನೀರು ನಿಲ್ಲಿಸುವುದು.",
+        pestControl: "Brown planthopper (BPH) alleyway formation every 2m + Blast resistant seed treatment with Tricyclazole (2g/kg).",
+        pestControlKn: "ಜಿಗಿ ಹುಳು ತಡೆಗೆ ಪ್ರತಿ 2 ಮೀಟರ್‌ಗೆ ಗಾಳಿ ದಾರಿ ಬಿಡುವುದು + ಬೆಂಕಿ ರೋಗ ತಡೆಗೆ ಟ್ರೈಸೈಕ್ಲೋಜೋಲ್‌ನಿಂದ ಬೀಜೋಪಚಾರ.",
+        harvesting: "Harvest when 85% of panicles turn golden straw color. Moisture 20-22%. Immediate threshing & sun-drying to 14%.",
+        harvestingKn: "85% ತೆನೆಗಳು ಬಂಗಾರದ ಬಣ್ಣಕ್ಕೆ ತಿರುಗಿದಾಗ ಕೊಯ್ಲು. ತೇವಾಂಶ 14% ಗೆ ಬರುವಂತೆ ಬಿಸಿಲಿನಲ್ಲಿ ಒಣಗಿಸಿ ದಾಸ್ತಾನು.",
+        economicsSummary: "Grain yield: 26-30 Q/acre @ ₹2,300/Q (MSP 2026) + Paddy straw 2.5 tonnes for cattle = Net: ₹1.2L/acre/season.",
+        economicsSummaryKn: "ಧಾನ್ಯ ಇಳುವರಿ: 26-30 ಕ್ವಿಂಟಾಲ್/ಎಕರೆಗೆ @ ₹2,300/ಕ್ವಿಂಟಾಲ್ (ಬೆಂಬಲ ಬೆಲೆ 2026) + ಹುಲ್ಲು = ನಿವ್ವಳ ಲಾಭ: ₹1.2 ಲಕ್ಷ/ಎಕರೆ.",
+      },
     },
   ];
 
@@ -427,6 +474,206 @@ export const CropGuideView: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* ── Comprehensive Agronomic Crop Guide Modal ── */}
+      {showGuideModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/75 backdrop-blur-sm animate-fadeIn">
+          <div className="relative w-full max-w-3xl max-h-[92vh] bg-white dark:bg-krishi-darkcard rounded-2xl shadow-2xl border border-slate-200 dark:border-krishi-darkborder flex flex-col overflow-hidden animate-scaleUp">
+            {/* Modal Header */}
+            <div className="p-5 border-b border-slate-200 dark:border-krishi-darkborder bg-gradient-to-r from-emerald-50 via-teal-50 to-white dark:from-emerald-950/40 dark:via-teal-950/20 dark:to-krishi-darkcard flex items-start justify-between gap-4">
+              <div className="flex items-center gap-3.5">
+                <div className="w-12 h-12 rounded-2xl bg-emerald-600 text-white flex items-center justify-center text-2xl shadow-lg ring-2 ring-emerald-400/30 shrink-0">
+                  🌱
+                </div>
+                <div>
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className="text-[10px] font-extrabold uppercase tracking-widest text-emerald-700 dark:text-emerald-400 bg-emerald-100 dark:bg-emerald-950/70 px-2.5 py-0.5 rounded-full border border-emerald-300 dark:border-emerald-800">
+                      ICAR / CPCRI Certified POP 2026
+                    </span>
+                    <span className="text-[10px] font-bold text-slate-500 dark:text-slate-400">
+                      Zone XII (Ghats & Coastal Plain)
+                    </span>
+                    <span className="text-[10px] font-bold bg-amber-100 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300 px-2 py-0.5 rounded-full">
+                      {currentCrop.match}% Compatibility
+                    </span>
+                  </div>
+                  <h2 className="text-xl font-black text-slate-900 dark:text-white mt-1">
+                    {language === "kn" ? currentCrop.nameKn : currentCrop.name}
+                  </h2>
+                  <p className="text-xs text-slate-600 dark:text-slate-300 mt-0.5">
+                    {language === "kn" ? currentCrop.descKn : currentCrop.desc}
+                  </p>
+                </div>
+              </div>
+
+              <button
+                onClick={() => setShowGuideModal(false)}
+                className="p-2 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition"
+                aria-label="Close guide"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Modal Scrollable Body */}
+            <div className="p-5 overflow-y-auto space-y-4 flex-1 text-slate-800 dark:text-slate-200 text-xs">
+              {/* Quick Metrics Bar */}
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                <div className="bg-slate-50 dark:bg-krishi-darkbg p-3 rounded-xl border border-slate-200 dark:border-krishi-darkborder">
+                  <span className="text-[10px] text-slate-500 dark:text-slate-400 block font-semibold">Suitability Match</span>
+                  <span className="text-lg font-black text-emerald-600 dark:text-emerald-400 block mt-0.5">{currentCrop.match}%</span>
+                  <span className="text-[10px] text-emerald-700 dark:text-emerald-300 font-medium">Optimal laterite match</span>
+                </div>
+
+                <div className="bg-slate-50 dark:bg-krishi-darkbg p-3 rounded-xl border border-slate-200 dark:border-krishi-darkborder">
+                  <span className="text-[10px] text-slate-500 dark:text-slate-400 block font-semibold">Est. Net Income</span>
+                  <span className="text-lg font-black text-slate-900 dark:text-white block mt-0.5">{currentCrop.netIncome}</span>
+                  <span className="text-[10px] text-slate-500">Per acre / year</span>
+                </div>
+
+                <div className="bg-slate-50 dark:bg-krishi-darkbg p-3 rounded-xl border border-slate-200 dark:border-krishi-darkborder">
+                  <span className="text-[10px] text-slate-500 dark:text-slate-400 block font-semibold">Weekly Water Need</span>
+                  <span className="text-lg font-black text-blue-600 dark:text-blue-400 block mt-0.5">
+                    {language === "kn" ? currentCrop.waterKn : currentCrop.water}
+                  </span>
+                  <span className="text-[10px] text-slate-500">Drip irrigated</span>
+                </div>
+
+                <div className="bg-slate-50 dark:bg-krishi-darkbg p-3 rounded-xl border border-slate-200 dark:border-krishi-darkborder">
+                  <span className="text-[10px] text-slate-500 dark:text-slate-400 block font-semibold">Recommended Seeds</span>
+                  <span className="text-xs font-bold text-slate-900 dark:text-white block mt-1 line-clamp-1">
+                    {currentCrop.cultivars}
+                  </span>
+                  <span className="text-[10px] text-amber-600 dark:text-amber-400 font-semibold">SATHI certified</span>
+                </div>
+              </div>
+
+              {/* Section 1: Spacing & Pit Preparation */}
+              <div className="bg-emerald-50/50 dark:bg-emerald-950/20 p-4 rounded-xl border border-emerald-200/80 dark:border-emerald-900/40 space-y-2">
+                <h4 className="text-sm font-bold text-emerald-900 dark:text-emerald-300 flex items-center gap-2">
+                  <Layers className="w-4 h-4 text-emerald-600" />
+                  <span>{language === "kn" ? "೧. ನಾಟಿ, ಅಂತರ & ಗುಂಡಿ ಸಿದ್ಧತೆ" : "1. Spacing & Field Layout"}</span>
+                </h4>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-1">
+                  <div className="bg-white dark:bg-krishi-darkcard p-3 rounded-lg border border-emerald-200/60 dark:border-emerald-900/30">
+                    <span className="font-bold text-slate-900 dark:text-white block mb-0.5">
+                      {language === "kn" ? "ಅಂತರ & ಸಸಿಗಳ ಸಂಖ್ಯೆ" : "Planting Geometry & Spacing"}
+                    </span>
+                    <p className="text-slate-600 dark:text-slate-300">
+                      {language === "kn" ? currentCrop.guidePop.spacingKn : currentCrop.guidePop.spacing}
+                    </p>
+                  </div>
+                  <div className="bg-white dark:bg-krishi-darkcard p-3 rounded-lg border border-emerald-200/60 dark:border-emerald-900/30">
+                    <span className="font-bold text-slate-900 dark:text-white block mb-0.5">
+                      {language === "kn" ? "ಗುಂಡಿ ಸಿದ್ಧತೆ & ಮೇಲ್ಮಣ್ಣು" : "Pit Preparation & Basal Mix"}
+                    </span>
+                    <p className="text-slate-600 dark:text-slate-300">
+                      {language === "kn" ? currentCrop.guidePop.pitPrepKn : currentCrop.guidePop.pitPrep}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Section 2: Nutrition & Fertilizer Application for Acreage */}
+              <div className="bg-blue-50/50 dark:bg-blue-950/20 p-4 rounded-xl border border-blue-200/80 dark:border-blue-900/40 space-y-2">
+                <h4 className="text-sm font-bold text-blue-900 dark:text-blue-300 flex items-center gap-2">
+                  <Package className="w-4 h-4 text-blue-600" />
+                  <span>
+                    {language === "kn"
+                      ? `೨. ರಸಗೊಬ್ಬರ & ಪೋಷಕಾಂಶಗಳ ವೇಳಾಪಟ್ಟಿ (${acreage} ಎಕರೆಗೆ)`
+                      : `2. Fertilizer & Nutrition Protocol (for ${acreage} acres)`}
+                  </span>
+                </h4>
+                <div className="grid grid-cols-3 gap-2 text-center pt-1">
+                  <div className="bg-white dark:bg-krishi-darkcard p-2.5 rounded-lg border border-blue-200 dark:border-blue-900/30">
+                    <span className="text-[10px] font-bold text-slate-500 block">Urea (46% N)</span>
+                    <span className="text-base font-black text-blue-700 dark:text-blue-300">{(currentCrop.urea * acreage).toFixed(1)} Bags</span>
+                    <span className="text-[10px] text-slate-500 block">Split 30-45 DAS</span>
+                  </div>
+                  <div className="bg-white dark:bg-krishi-darkcard p-2.5 rounded-lg border border-blue-200 dark:border-blue-900/30">
+                    <span className="text-[10px] font-bold text-slate-500 block">DAP (18:46:0)</span>
+                    <span className="text-base font-black text-amber-700 dark:text-amber-300">{(currentCrop.dap * acreage).toFixed(1)} Bags</span>
+                    <span className="text-[10px] text-slate-500 block">100% Basal at planting</span>
+                  </div>
+                  <div className="bg-white dark:bg-krishi-darkcard p-2.5 rounded-lg border border-blue-200 dark:border-blue-900/30">
+                    <span className="text-[10px] font-bold text-slate-500 block">MOP (60% K)</span>
+                    <span className="text-base font-black text-rose-700 dark:text-rose-300">{(currentCrop.mop * acreage).toFixed(1)} Bags</span>
+                    <span className="text-[10px] text-slate-500 block">Post-monsoon top-dress</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Section 3: Water & Pest Calendar */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <div className="p-3.5 bg-slate-50 dark:bg-krishi-darkbg rounded-xl border border-slate-200 dark:border-krishi-darkborder space-y-1.5">
+                  <h5 className="font-bold text-slate-900 dark:text-white flex items-center gap-1.5 text-xs">
+                    <Droplets className="w-3.5 h-3.5 text-blue-500" />
+                    <span>{language === "kn" ? "ನೀರಾವರಿ ವೇಳಾಪಟ್ಟಿ" : "Irrigation Management"}</span>
+                  </h5>
+                  <p className="text-slate-600 dark:text-slate-300 text-[11px] leading-relaxed">
+                    {language === "kn" ? currentCrop.guidePop.irrigationProtocolKn : currentCrop.guidePop.irrigationProtocol}
+                  </p>
+                </div>
+
+                <div className="p-3.5 bg-slate-50 dark:bg-krishi-darkbg rounded-xl border border-slate-200 dark:border-krishi-darkborder space-y-1.5">
+                  <h5 className="font-bold text-slate-900 dark:text-white flex items-center gap-1.5 text-xs">
+                    <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
+                    <span>{language === "kn" ? "ರೋಗ & ಕೀಟ ನಿಯಂತ್ರಣ ಕ್ಯಾಲೆಂಡರ್" : "Pest & Disease Prevention"}</span>
+                  </h5>
+                  <p className="text-slate-600 dark:text-slate-300 text-[11px] leading-relaxed">
+                    {language === "kn" ? currentCrop.guidePop.pestControlKn : currentCrop.guidePop.pestControl}
+                  </p>
+                </div>
+              </div>
+
+              {/* Section 4: Harvesting & Market Realization */}
+              <div className="p-3.5 bg-amber-50/50 dark:bg-amber-950/20 rounded-xl border border-amber-200 dark:border-amber-900/40 space-y-1">
+                <h5 className="font-bold text-amber-900 dark:text-amber-300 flex items-center gap-1.5 text-xs">
+                  <TrendingUp className="w-3.5 h-3.5 text-amber-600" />
+                  <span>{language === "kn" ? "ಕೊಯ್ಲು & ಮಾರುಕಟ್ಟೆ ಆದಾಯ ಮುನ್ನೋಟ" : "Harvesting & Mandi Realization"}</span>
+                </h5>
+                <p className="text-slate-700 dark:text-slate-300 text-[11px] leading-relaxed">
+                  {language === "kn" ? currentCrop.guidePop.economicsSummaryKn : currentCrop.guidePop.economicsSummary}
+                </p>
+              </div>
+            </div>
+
+            {/* Modal Footer Actions */}
+            <div className="p-4 border-t border-slate-200 dark:border-krishi-darkborder bg-slate-50 dark:bg-krishi-darkbg flex flex-wrap items-center justify-between gap-3">
+              <button
+                onClick={() => {
+                  setShowGuideModal(false);
+                  setActiveTab("seed-bazaar");
+                }}
+                className="px-4 py-2 bg-krishi-700 hover:bg-krishi-800 text-white rounded-xl text-xs font-bold transition flex items-center gap-2 shadow-sm"
+              >
+                <Sprout className="w-4 h-4 text-krishi-gold" />
+                <span>{language === "kn" ? "ಸಾಥಿ ಪ್ರಮಾಣೀಕೃತ ಬೀಜಗಳನ್ನು ನೋಡಿ →" : "Check Certified Seeds at SATHI Hub →"}</span>
+              </button>
+
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => {
+                    setShowGuideModal(false);
+                    setCopilotOpen(true);
+                  }}
+                  className="px-3.5 py-2 bg-emerald-100 dark:bg-emerald-950/60 hover:bg-emerald-200 text-emerald-800 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800 rounded-xl text-xs font-bold transition flex items-center gap-1.5"
+                >
+                  <Sparkles className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+                  <span>{language === "kn" ? "ಕಿಸಾನ್ ಮಿತ್ರ AI ಕೇಳಿ" : "Ask Kisan Mitra AI"}</span>
+                </button>
+
+                <button
+                  onClick={() => setShowGuideModal(false)}
+                  className="px-4 py-2 bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 text-slate-800 dark:text-slate-200 rounded-xl text-xs font-bold transition"
+                >
+                  {language === "kn" ? "ಮುಚ್ಚಿ" : "Close"}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
