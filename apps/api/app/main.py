@@ -22,6 +22,45 @@ app.add_middleware(
 
 app.include_router(api_router, prefix=settings.API_V1_STR)
 
+@app.on_event("startup")
+async def startup_db_init():
+    """Ensure database schema and initial admin users exist on any fresh cloud deployment."""
+    try:
+        from app.core.database import engine, Base
+        import app.models  # ensure models are registered
+        async with engine.begin() as conn:
+            await conn.run_sync(Base.metadata.create_all)
+            
+        from app.models.admin_user import AdminUser
+        from sqlalchemy.ext.asyncio import AsyncSession
+        from sqlalchemy import select
+        import hashlib
+
+        def _hash(pw: str) -> str:
+            salted = f"krishisetu_salt_{pw}_2026"
+            return hashlib.sha256(salted.encode()).hexdigest()
+
+        async with AsyncSession(engine) as session:
+            admin_check = await session.execute(select(AdminUser).limit(1))
+            if not admin_check.scalar_one_or_none():
+                session.add(AdminUser(
+                    username="admin",
+                    password_hash=_hash("admin123"),
+                    full_name="KrishiSetu Super Admin",
+                    role="sdm_admin",
+                    taluk="All",
+                ))
+                session.add(AdminUser(
+                    username="dho_puttur",
+                    password_hash=_hash("puttur@2026"),
+                    full_name="District Horticulture Officer, Puttur",
+                    role="district_officer",
+                    taluk="Puttur",
+                ))
+                await session.commit()
+    except Exception as e:
+        print(f"[Startup Warning] Schema initialization: {e}")
+
 @app.get("/")
 def root():
     return {

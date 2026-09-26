@@ -1,7 +1,8 @@
 import sys
 import asyncio
 import hashlib
-sys.stdout.reconfigure(encoding='utf-8')
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding='utf-8')
 
 from app.core.database import engine, Base
 from app.models.admin_user import AdminUser

@@ -115,3 +115,21 @@ pip install -r requirements.txt
 uvicorn app.main:app --reload --port 8000
 ```
 API Documentation will be accessible at [http://localhost:8000/docs](http://localhost:8000/docs).
+
+---
+
+## 🌐 Cloud & Production Deployment
+
+For complete, step-by-step instructions on deploying KRISISETU, see [DEPLOYMENT.md](DEPLOYMENT.md).
+
+### 1-Click Docker Stack (VPS / Local)
+```bash
+docker compose up --build -d
+```
+- **Web Portal:** `http://localhost:3000`
+- **FastAPI Backend:** `http://localhost:8000/docs`
+
+### Cloud Hosting (Free Tier)
+- **Frontend (Next.js):** [Vercel](https://vercel.com) (Root Directory: `apps/web`, Environment Variable: `NEXT_PUBLIC_API_URL=<your-api-url>/api/v1`)
+- **Backend (FastAPI):** [Render](https://render.com) (Web Service, Root Directory: `apps/api`, Build Command: `pip install -r requirements.txt && python seed_db.py && python seed_admin.py`, Start Command: `uvicorn app.main:app --host 0.0.0.0 --port $PORT`)
+- **1-Click Render Blueprint:** Use the included `render.yaml` to deploy both services simultaneously.

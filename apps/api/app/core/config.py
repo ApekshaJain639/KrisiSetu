@@ -34,7 +34,7 @@ class Settings(BaseSettings):
     DATAGOV_API_KEY: Optional[str] = os.getenv("DATAGOV_API_KEY", "")
 
     # Data directory path
-    DATA_DIR: str = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../data"))
+    DATA_DIR: str = os.getenv("DATA_DIR", os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../data")))
 
     class Config:
         case_sensitive = True
