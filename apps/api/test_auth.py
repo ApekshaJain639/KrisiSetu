@@ -41,5 +41,24 @@ async def main():
         r7 = await client.post("/api/v1/auth/admin/login", json={"username": "admin", "password": "wrong"})
         print("7. Wrong Admin Password (expect 401):", r7.status_code, r7.json())
 
+        # 8. Test Farmer accessing Admin endpoint (expect 403 Forbidden)
+        farmer_token = r1.json().get("token", "")
+        r8 = await client.get("/api/v1/admin/overview", headers={"Authorization": f"Bearer {farmer_token}", "X-User-Role": "farmer"})
+        print("8. Farmer Access to Admin Console (expect 403):", r8.status_code, r8.json())
+        assert r8.status_code == 403, f"Expected 403 but got {r8.status_code}"
+
+        # 9. Test Admin accessing Admin endpoint (expect 200 OK)
+        admin_token = r5.json().get("token", "")
+        r9 = await client.get("/api/v1/admin/overview", headers={"Authorization": f"Bearer {admin_token}", "X-User-Role": "sdm_admin"})
+        print("9. Admin Access to Admin Console (expect 200):", r9.status_code)
+        assert r9.status_code == 200, f"Expected 200 but got {r9.status_code}"
+
+        # 10. Test Farmer accessing Live eNAM Market Feed (expect 200 OK)
+        r10 = await client.get("/api/v1/market/live-enam")
+        print("10. Market Live eNAM Feed Access (expect 200):", r10.status_code)
+        assert r10.status_code == 200, f"Expected 200 but got {r10.status_code}"
+
+        print("\nAll Auth & RBAC Security Tests Passed Successfully!")
+
 if __name__ == "__main__":
     asyncio.run(main())
