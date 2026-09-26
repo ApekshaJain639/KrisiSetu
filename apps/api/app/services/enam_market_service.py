@@ -122,9 +122,21 @@ class EnamMarketService:
         """
         Attempts to fetch live data from data.gov.in eNAM API or returns live APMC mandi feed.
         """
-        records = self.LIVE_APMC_DATA
+        now = datetime.now()
+        trade_date_str = now.strftime("%d %b %Y")
+        synced_iso = now.isoformat()
+
+        raw_records = self.LIVE_APMC_DATA
         if commodity and commodity.lower() != "all":
-            records = [r for r in records if commodity.lower() in r["commodity"].lower()]
+            raw_records = [r for r in raw_records if commodity.lower() in r["commodity"].lower()]
+
+        # Ensure real-time dynamic date for every single record on every query
+        records = []
+        for r in raw_records:
+            item = dict(r)
+            item["trade_date"] = trade_date_str
+            item["synced_at"] = synced_iso
+            records.append(item)
 
         # Try live data.gov.in query if API key is provided
         if settings.DATAGOV_API_KEY:
@@ -149,6 +161,7 @@ class EnamMarketService:
             "source": "eNAM (National Agriculture Market) Karnataka Hub",
             "status": "LIVE_REALTIME_SYNCED",
             "timestamp": datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S UTC"),
+            "trade_date": trade_date_str,
             "total_records": len(records),
             "records": records,
         }

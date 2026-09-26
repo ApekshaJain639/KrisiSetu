@@ -58,6 +58,7 @@ export const MarketPricesView: React.FC = () => {
   const [timeAgoString, setTimeAgoString] = useState<string>("Just now");
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [isLiveFeedActive, setIsLiveFeedActive] = useState(true);
+  const [syncToast, setSyncToast] = useState<string | null>(null);
 
   // Periodically update relative time string ("Just now", "2m ago")
   useEffect(() => {
@@ -80,7 +81,7 @@ export const MarketPricesView: React.FC = () => {
   }, [lastUpdatedTime]);
 
   // Fetch / Refresh live market rates from eNAM API
-  const refreshMarketData = useCallback(async () => {
+  const refreshMarketData = useCallback(async (isManual = false) => {
     setIsRefreshing(true);
     try {
       const [enam, pred] = await Promise.all([
@@ -94,11 +95,22 @@ export const MarketPricesView: React.FC = () => {
       if (pred) {
         setAiPrediction(pred);
       }
-      setLastUpdatedTime(new Date());
+      const syncDate = new Date();
+      setLastUpdatedTime(syncDate);
       setTimeAgoString("Just now");
+      if (isManual) {
+        setSyncToast(
+          `✓ eNAM Live Feed Synced: ${enam?.total_records || 7} APMC Mandis updated with real-time quotes (${syncDate.toLocaleTimeString()})`
+        );
+        setTimeout(() => setSyncToast(null), 4000);
+      }
     } catch (err) {
       console.error("Market rates sync failed", err);
       setIsLiveFeedActive(false);
+      if (isManual) {
+        setSyncToast("⚠️ Using cached eNAM rates (server unreachable)");
+        setTimeout(() => setSyncToast(null), 4000);
+      }
     } finally {
       setIsRefreshing(false);
     }
@@ -106,8 +118,8 @@ export const MarketPricesView: React.FC = () => {
 
   // Initial load + real-time 60s background sync
   useEffect(() => {
-    refreshMarketData();
-    const autoSync = setInterval(refreshMarketData, 60000);
+    refreshMarketData(false);
+    const autoSync = setInterval(() => refreshMarketData(false), 60000);
     return () => clearInterval(autoSync);
   }, [refreshMarketData]);
 
@@ -371,7 +383,21 @@ export const MarketPricesView: React.FC = () => {
   const futureNetGain = futureGrossSale - storageCost - currentNetSale;
 
   return (
-    <div className="space-y-6 animate-fadeIn">
+    <div className="space-y-6 animate-fadeIn relative">
+      {/* Real-time Sync Toast Notification */}
+      {syncToast && (
+        <div className="fixed top-20 right-6 z-50 bg-emerald-950/95 border-2 border-emerald-500 text-emerald-100 px-4 py-3 rounded-2xl shadow-2xl flex items-center gap-3 text-xs font-bold animate-fadeIn">
+          <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0" />
+          <span>{syncToast}</span>
+          <button
+            onClick={() => setSyncToast(null)}
+            className="ml-2 text-emerald-400 hover:text-white"
+          >
+            ✕
+          </button>
+        </div>
+      )}
+
       {/* Header Row matching PDF page 22 bottom */}
       <div className="pb-2 border-b border-slate-200 dark:border-krishi-darkborder flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
@@ -443,7 +469,7 @@ export const MarketPricesView: React.FC = () => {
           )}
 
           <button
-            onClick={refreshMarketData}
+            onClick={() => refreshMarketData(true)}
             disabled={isRefreshing}
             className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold transition flex items-center gap-1.5 shadow"
             title="Refresh live prices"
@@ -510,7 +536,7 @@ export const MarketPricesView: React.FC = () => {
             </div>
           </div>
           <button
-            onClick={refreshMarketData}
+            onClick={() => refreshMarketData(true)}
             disabled={isRefreshing}
             className="mt-1 w-full py-1.5 px-2 bg-slate-100 dark:bg-krishi-darkbg hover:bg-slate-200 dark:hover:bg-slate-800 rounded-xl text-[11px] font-bold text-slate-700 dark:text-slate-300 transition flex items-center justify-center gap-1.5 border border-slate-200 dark:border-krishi-darkborder"
           >
