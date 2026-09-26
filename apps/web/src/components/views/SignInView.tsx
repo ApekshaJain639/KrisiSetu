@@ -92,7 +92,7 @@ export const SignInView: React.FC = () => {
       setFarmerProfile({
         farmerName: res.name,
         location: `${res.taluk || "Puttur"} · Dakshina Kannada`,
-        fruitsId: res.fruits_id || "KA-FRUITS-2024-9981",
+        fruitsId: res.fruits_id || "KA-FRUITS-2026-9981",
         acreage: res.total_acreage || 4.2,
         cropVariety: res.crop_type || "Arecanut · Mangala",
       });
@@ -240,7 +240,7 @@ export const SignInView: React.FC = () => {
       setFarmerProfile({
         farmerName: res.name,
         location: "Puttur · Dakshina Kannada",
-        fruitsId: res.fruits_id || "KA-FRUITS-2024-9981",
+        fruitsId: res.fruits_id || "KA-FRUITS-2026-9981",
         acreage: res.total_acreage || 4.2,
         cropVariety: res.crop_type || "Arecanut · Mangala",
       });

@@ -111,7 +111,7 @@ export const useFarmStore = create<FarmState>((set) => ({
   farmerName: "Shivappa Gowda",
   farmName: "Shrinivasa Farm",
   location: "Puttur · Dakshina Kannada",
-  fruitsId: "KA-FRUITS-2024-9981",
+  fruitsId: "KA-FRUITS-2026-9981",
   language: "kn",
   theme: "light",
   activeTab: "overview",

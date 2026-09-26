@@ -930,7 +930,7 @@ export const GisFieldMapView: React.FC = () => {
                   Bhoomi Digital Land Parcel & Agro-Climatic Intelligence Certificate
                 </h2>
                 <div className="text-[10px] font-mono text-slate-500 mt-1">
-                  Reference: KRN-BHOOMI-RTC-2024-SY{ocrResult?.survey_no || "142-2A"} · Validated under ICAR Zone XII Protocol
+                  Reference: KRN-BHOOMI-RTC-2026-SY{ocrResult?.survey_no || "142-2A"} · Validated under ICAR Zone XII Protocol
                 </div>
               </div>
 

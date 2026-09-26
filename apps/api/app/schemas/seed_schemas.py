@@ -29,8 +29,8 @@ class SeedReservationRequest(BaseModel):
     crop: str
     variety: str
     quantity_kg: float
-    farmer_id: Optional[str] = "KA-FRUITS-2024-9981"
-    fruits_id: Optional[str] = "KA-FRUITS-2024-9981"
+    farmer_id: Optional[str] = "KA-FRUITS-2026-9981"
+    fruits_id: Optional[str] = "KA-FRUITS-2026-9981"
 
 class SeedReservationResponse(BaseModel):
     reservation_id: str

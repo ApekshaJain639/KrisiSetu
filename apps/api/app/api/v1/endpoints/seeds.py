@@ -49,7 +49,7 @@ async def reserve_seed_stock(
         quantity_bags=max(1, int(req.quantity_kg)),
         total_amount=res.total_payable_inr,
         dbt_subsidy_amount=res.dbt_savings_inr,
-        fruits_id=req.fruits_id or "KA-FRUITS-2024-9981",
+        fruits_id=req.fruits_id or "KA-FRUITS-2026-9981",
         status="RESERVED_ACTIVE",
         expires_at=datetime.utcnow() + timedelta(hours=48)
     )
