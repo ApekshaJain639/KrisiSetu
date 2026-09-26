@@ -50,7 +50,20 @@ export interface DbHealth {
   timestamp: string;
 }
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api/v1";
+const getDynamicApiBase = (): string => {
+  const envUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api/v1";
+  if (typeof window !== "undefined") {
+    const host = window.location.hostname;
+    if (host && host !== "localhost" && host !== "127.0.0.1") {
+      if (envUrl.includes("localhost") || envUrl.includes("127.0.0.1")) {
+        return envUrl.replace(/localhost|127\.0\.0\.1/, host);
+      }
+    }
+  }
+  return envUrl;
+};
+
+const API_BASE = getDynamicApiBase();
 
 function getAdminHeaders(): Record<string, string> {
   const headers: Record<string, string> = { "Content-Type": "application/json" };

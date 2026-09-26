@@ -1,7 +1,18 @@
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api/v1";
+export function getApiBase(): string {
+  const envUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api/v1";
+  if (typeof window !== "undefined") {
+    const host = window.location.hostname;
+    if (host && host !== "localhost" && host !== "127.0.0.1") {
+      if (envUrl.includes("localhost") || envUrl.includes("127.0.0.1")) {
+        return envUrl.replace(/localhost|127\.0\.0\.1/, host);
+      }
+    }
+  }
+  return envUrl;
+}
 
 export async function fetchFromAPI(endpoint: string, options: RequestInit = {}) {
-  const url = `${API_BASE_URL}${endpoint}`;
+  const url = `${getApiBase()}${endpoint}`;
   const response = await fetch(url, {
     headers: {
       "Content-Type": "application/json",

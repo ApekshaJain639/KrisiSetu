@@ -69,6 +69,8 @@ interface FarmState {
   irrigationStatus: boolean;
   solenoidAutoMode: boolean;
   copilotOpen: boolean;
+  mobileMenuOpen: boolean;
+  setMobileMenuOpen: (open: boolean) => void;
 
   // Database status
   dbStats: DbStats;
@@ -130,6 +132,8 @@ export const useFarmStore = create<FarmState>((set) => ({
   irrigationStatus: false,
   solenoidAutoMode: true,
   copilotOpen: false,
+  mobileMenuOpen: false,
+  setMobileMenuOpen: (mobileMenuOpen) => set({ mobileMenuOpen }),
 
   dbStats: {
     connected: true,

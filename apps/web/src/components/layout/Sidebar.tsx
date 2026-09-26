@@ -16,6 +16,7 @@ import {
   ShieldCheck,
   MapPin,
   Lock,
+  X,
 } from "lucide-react";
 import { useFarmStore, ActiveTab, isUserAdmin } from "@/stores/useFarmStore";
 import { useTranslation } from "@/lib/i18n/translations";
@@ -32,6 +33,8 @@ export const Sidebar: React.FC = () => {
     setCopilotOpen,
     setViewMode,
     currentUser,
+    mobileMenuOpen,
+    setMobileMenuOpen,
   } = useFarmStore();
 
   const isAdmin = isUserAdmin(currentUser);
@@ -50,22 +53,33 @@ export const Sidebar: React.FC = () => {
     { id: "aiot-lab", label: t.aiotLab, icon: Cpu, badge: "IoT" },
   ];
 
-  return (
-    <aside className="w-64 shrink-0 bg-[#0d2818] text-white flex flex-col min-h-[calc(100vh-4rem)] border-r border-[#1a4228] select-none shadow-xl">
-      {/* Farmer Profile Card in Sidebar (as seen in PDF page 18) */}
+  const renderContent = (isMobile = false) => (
+    <div className="flex flex-col h-full">
+      {/* Farmer Profile Card in Sidebar */}
       <div className="p-4 border-b border-[#1b4a2e]">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full bg-krishi-gold text-slate-950 font-black flex items-center justify-center text-sm shadow-md ring-2 ring-krishi-gold/30">
-            SG
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-full bg-krishi-gold text-slate-950 font-black flex items-center justify-center text-sm shadow-md ring-2 ring-krishi-gold/30">
+              SG
+            </div>
+            <div className="flex-1 min-w-0">
+              <h3 className="font-bold text-sm text-white truncate leading-snug">
+                {farmerName}
+              </h3>
+              <p className="text-[11px] text-emerald-200/80 truncate">
+                {location} · {acreage} acres
+              </p>
+            </div>
           </div>
-          <div className="flex-1 min-w-0">
-            <h3 className="font-bold text-sm text-white truncate leading-snug">
-              {farmerName}
-            </h3>
-            <p className="text-[11px] text-emerald-200/80 truncate">
-              {location} · {acreage} acres
-            </p>
-          </div>
+          {isMobile && (
+            <button
+              onClick={() => setMobileMenuOpen(false)}
+              className="p-1.5 rounded-lg text-emerald-300 hover:text-white hover:bg-emerald-800/50"
+              aria-label="Close menu"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          )}
         </div>
 
         {/* Farm Status indicator */}
@@ -88,35 +102,37 @@ export const Sidebar: React.FC = () => {
       </div>
 
       {/* Navigation Links */}
-      <nav className="flex-1 px-2 space-y-1 overflow-y-auto py-1">
+      <nav className="flex-1 px-3 space-y-1 overflow-y-auto">
         {navItems.map((item) => {
-          const isActive = activeTab === item.id;
           const Icon = item.icon;
+          const isActive = activeTab === item.id;
           return (
             <button
               key={item.id}
-              onClick={() => setActiveTab(item.id)}
-              className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold transition-all duration-150 group text-left ${
+              onClick={() => {
+                setActiveTab(item.id);
+                if (isMobile) setMobileMenuOpen(false);
+              }}
+              className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold transition-all duration-150 ${
                 isActive
-                  ? "bg-white text-[#0d2818] shadow-md font-bold"
-                  : "text-emerald-100/90 hover:bg-[#153e26] hover:text-white"
+                  ? "bg-emerald-600 text-white font-bold shadow-md shadow-emerald-950/30 ring-1 ring-emerald-400/40 translate-x-1"
+                  : "text-emerald-100/90 hover:bg-[#153e24] hover:text-white"
               }`}
             >
-              <div className="flex items-center gap-2.5 truncate">
+              <div className="flex items-center gap-3">
                 <Icon
-                  className={`w-4 h-4 shrink-0 transition-transform group-hover:scale-110 ${
-                    isActive ? "text-[#0d2818]" : "text-emerald-300"
+                  className={`w-4 h-4 ${
+                    isActive ? "text-krishi-gold" : "text-emerald-300/80"
                   }`}
                 />
-                <span className="truncate">{item.label}</span>
+                <span>{item.label}</span>
               </div>
-
               {item.badge && (
                 <span
-                  className={`text-[9px] font-bold px-1.5 py-0.5 rounded ${
+                  className={`text-[10px] px-1.5 py-0.5 rounded font-bold ${
                     isActive
-                      ? "bg-emerald-100 text-emerald-900"
-                      : "bg-[#164329] text-emerald-300 group-hover:bg-[#1d5534]"
+                      ? "bg-emerald-700/80 text-white"
+                      : "bg-[#184628] text-emerald-300 border border-[#246138]"
                   }`}
                 >
                   {item.badge}
@@ -127,16 +143,22 @@ export const Sidebar: React.FC = () => {
         })}
       </nav>
 
-      {/* Bottom Shortcuts */}
-      <div className="p-3 border-t border-[#1b4a2e] space-y-2">
+      {/* Bottom Section: Admin Entry / Status & Voice Copilot */}
+      <div className="p-3 border-t border-[#1b4a2e] space-y-2 mt-auto">
         {isAdmin ? (
           <button
-            onClick={() => setViewMode("admin")}
-            className="w-full bg-[#143a23] hover:bg-[#1a4a2d] border border-[#235838] p-2 rounded-xl flex items-center justify-between text-left text-xs font-semibold text-emerald-200 transition"
+            onClick={() => {
+              setViewMode("admin");
+              if (isMobile) setMobileMenuOpen(false);
+            }}
+            className="w-full bg-gradient-to-r from-indigo-900/60 to-purple-900/40 hover:from-indigo-900/80 hover:to-purple-900/60 border border-indigo-400/40 p-2 rounded-xl flex items-center justify-between text-left text-xs font-bold text-white transition group shadow-sm"
           >
             <div className="flex items-center gap-2">
               <ShieldCheck className="w-4 h-4 text-krishi-gold" />
-              <span>Admin Console</span>
+              <div>
+                <span className="block leading-tight">Admin Console</span>
+                <span className="text-[9px] text-indigo-200/80 block leading-tight font-normal">Super Admin Mode</span>
+              </div>
             </div>
             <span className="text-[9px] font-bold bg-emerald-900/60 text-emerald-300 px-1.5 py-0.5 rounded border border-emerald-700">
               Active
@@ -144,7 +166,10 @@ export const Sidebar: React.FC = () => {
           </button>
         ) : (
           <button
-            onClick={() => setViewMode("admin")}
+            onClick={() => {
+              setViewMode("admin");
+              if (isMobile) setMobileMenuOpen(false);
+            }}
             className="w-full bg-[#122c1b] hover:bg-[#183622] border border-[#1f472d] p-2 rounded-xl flex items-center justify-between text-left text-xs font-semibold text-slate-300 transition group"
             title="Admin authorization required"
           >
@@ -162,7 +187,10 @@ export const Sidebar: React.FC = () => {
         )}
 
         <button
-          onClick={() => setCopilotOpen(!copilotOpen)}
+          onClick={() => {
+            setCopilotOpen(!copilotOpen);
+            if (isMobile) setMobileMenuOpen(false);
+          }}
           className="w-full bg-gradient-to-r from-emerald-600/40 to-emerald-500/20 hover:from-emerald-600/60 hover:to-emerald-500/40 border border-emerald-500/30 p-2.5 rounded-xl flex items-center justify-between text-left transition-all group"
         >
           <div className="flex items-center gap-2">
@@ -181,6 +209,28 @@ export const Sidebar: React.FC = () => {
           <ChevronRight className="w-4 h-4 text-emerald-300 group-hover:translate-x-0.5 transition-transform" />
         </button>
       </div>
-    </aside>
+    </div>
+  );
+
+  return (
+    <>
+      {/* Desktop Sidebar (hidden on mobile/tablet screens < 1024px) */}
+      <aside className="hidden lg:flex w-64 shrink-0 bg-[#0d2818] text-white flex-col min-h-[calc(100vh-4rem)] border-r border-[#1a4228] select-none shadow-xl">
+        {renderContent(false)}
+      </aside>
+
+      {/* Mobile Drawer (Slide-in menu for small screens) */}
+      {mobileMenuOpen && (
+        <div className="fixed inset-0 z-50 lg:hidden flex">
+          <div
+            className="fixed inset-0 bg-black/60 backdrop-blur-sm transition-opacity"
+            onClick={() => setMobileMenuOpen(false)}
+          />
+          <div className="relative w-72 max-w-[85vw] bg-[#0d2818] text-white flex flex-col h-full shadow-2xl border-r border-[#1a4228] z-10 animate-in slide-in-from-left duration-200">
+            {renderContent(true)}
+          </div>
+        </div>
+      )}
+    </>
   );
 };

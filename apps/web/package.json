@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "dev:all": "concurrently -n \"BACKEND,FRONTEND\" -c \"cyan.bold,green.bold\" \"python -m uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload --app-dir ../api\" \"next dev\"",
+    "dev": "next dev -H 0.0.0.0",
+    "dev:all": "concurrently -n \"BACKEND,FRONTEND\" -c \"cyan.bold,green.bold\" \"python -m uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload --app-dir ../api\" \"next dev -H 0.0.0.0\"",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"

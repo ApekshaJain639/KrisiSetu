@@ -18,6 +18,8 @@ import {
   MapPin,
   Loader2,
   Lock,
+  Menu,
+  X,
 } from "lucide-react";
 import { useFarmStore, Language, ViewMode, isUserAdmin } from "@/stores/useFarmStore";
 import { useTranslation } from "@/lib/i18n/translations";
@@ -31,6 +33,8 @@ export const Navbar: React.FC = () => {
     theme,
     viewMode,
     copilotOpen,
+    mobileMenuOpen,
+    setMobileMenuOpen,
     currentUser,
     isGpsLocating,
     gpsStatusMessage,
@@ -58,7 +62,16 @@ export const Navbar: React.FC = () => {
     <header className="sticky top-0 z-40 bg-white/95 dark:bg-krishi-darkcard/95 backdrop-blur-md border-b border-slate-200 dark:border-krishi-darkborder transition-colors duration-200 shadow-sm">
       <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
         {/* Left: Brand / View indicator */}
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-2 sm:gap-4">
+          {viewMode === "app" && (
+            <button
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="lg:hidden p-2 -ml-1 text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-krishi-darkborder/50 rounded-xl transition"
+              aria-label="Toggle navigation menu"
+            >
+              {mobileMenuOpen ? <X className="w-5 h-5 text-emerald-600" /> : <Menu className="w-5 h-5" />}
+            </button>
+          )}
           <button
             onClick={() => setViewMode("landing")}
             className="flex items-center gap-3 text-left group"

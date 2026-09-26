@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { useFarmStore } from "@/stores/useFarmStore";
+import { useFarmStore, isUserAdmin } from "@/stores/useFarmStore";
 import { Navbar } from "@/components/layout/Navbar";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { OverviewView } from "@/components/views/OverviewView";
@@ -19,11 +19,28 @@ import { SignInView } from "@/components/views/SignInView";
 import { AdminDashboardView } from "@/components/views/AdminDashboardView";
 import { KisanMitraModal } from "@/components/copilot/KisanMitraModal";
 import { AdminAccessDeniedGuard } from "@/components/auth/AdminAccessDeniedGuard";
-import { isUserAdmin } from "@/stores/useFarmStore";
-import { ShieldCheck } from "lucide-react";
+import {
+  ShieldCheck,
+  LayoutDashboard,
+  ScanLine,
+  CloudRain,
+  TrendingUp,
+  Sparkles,
+  Menu,
+} from "lucide-react";
 
 export default function AppHome() {
-  const { viewMode, activeTab, theme, currentUser, setViewMode } = useFarmStore();
+  const {
+    viewMode,
+    activeTab,
+    theme,
+    currentUser,
+    language,
+    setViewMode,
+    setActiveTab,
+    setCopilotOpen,
+    setMobileMenuOpen,
+  } = useFarmStore();
   const [mounted, setMounted] = useState(false);
   const isAdmin = isUserAdmin(currentUser);
 
@@ -121,7 +138,7 @@ export default function AppHome() {
         <Sidebar />
 
         {/* Dynamic Main Workspace Content */}
-        <main className="flex-1 min-w-0 p-4 sm:p-6 lg:p-8 overflow-y-auto">
+        <main className="flex-1 min-w-0 p-4 sm:p-6 lg:p-8 pb-24 lg:pb-8 overflow-y-auto">
           {activeTab === "overview" && <OverviewView />}
           {activeTab === "gis-field-map" && <GisFieldMapView />}
           {activeTab === "crop-guide" && <CropGuideView />}
@@ -134,6 +151,79 @@ export default function AppHome() {
           {activeTab === "aiot-lab" && <AiotLabView />}
         </main>
       </div>
+
+      {/* Mobile Bottom Navigation Bar (Visible only on mobile/tablet < 1024px) */}
+      <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 dark:bg-[#0d2818]/95 backdrop-blur-md border-t border-slate-200 dark:border-[#1a4228] px-2 py-1.5 flex items-center justify-around shadow-2xl safe-area-inset-bottom">
+        <button
+          onClick={() => setActiveTab("overview")}
+          className={`flex flex-col items-center py-1 px-2 rounded-xl transition ${
+            activeTab === "overview"
+              ? "text-emerald-700 dark:text-emerald-400 font-bold scale-105"
+              : "text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200"
+          }`}
+        >
+          <LayoutDashboard className="w-5 h-5" />
+          <span className="text-[10px] mt-0.5">{language === "kn" ? "ಮುಖಪುಟ" : "Desk"}</span>
+        </button>
+
+        <button
+          onClick={() => setActiveTab("leaf-scan")}
+          className={`flex flex-col items-center py-1 px-2 rounded-xl transition ${
+            activeTab === "leaf-scan"
+              ? "text-emerald-700 dark:text-emerald-400 font-bold scale-105"
+              : "text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200"
+          }`}
+        >
+          <ScanLine className="w-5 h-5" />
+          <span className="text-[10px] mt-0.5">{language === "kn" ? "ಸ್ಕ್ಯಾನ್" : "Scan"}</span>
+        </button>
+
+        {/* Center Elevated Voice Copilot Action */}
+        <button
+          onClick={() => setCopilotOpen(true)}
+          className="flex flex-col items-center -mt-6 group"
+          title="Open Kisan Mitra AI Voice Copilot"
+        >
+          <div className="w-13 h-13 p-3 rounded-full bg-gradient-to-tr from-emerald-700 to-emerald-500 flex items-center justify-center text-white shadow-xl shadow-emerald-900/40 ring-4 ring-white dark:ring-slate-900 group-hover:scale-110 active:scale-95 transition-transform duration-150">
+            <Sparkles className="w-6 h-6 text-krishi-gold animate-pulse" />
+          </div>
+          <span className="text-[9px] font-bold text-emerald-700 dark:text-emerald-400 mt-0.5">
+            {language === "kn" ? "ಮಿತ್ರ AI" : "Copilot"}
+          </span>
+        </button>
+
+        <button
+          onClick={() => setActiveTab("risk-forecast")}
+          className={`flex flex-col items-center py-1 px-2 rounded-xl transition ${
+            activeTab === "risk-forecast"
+              ? "text-emerald-700 dark:text-emerald-400 font-bold scale-105"
+              : "text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200"
+          }`}
+        >
+          <CloudRain className="w-5 h-5" />
+          <span className="text-[10px] mt-0.5">{language === "kn" ? "ಹವಾಮಾನ" : "Weather"}</span>
+        </button>
+
+        <button
+          onClick={() => setActiveTab("market")}
+          className={`flex flex-col items-center py-1 px-2 rounded-xl transition ${
+            activeTab === "market"
+              ? "text-emerald-700 dark:text-emerald-400 font-bold scale-105"
+              : "text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200"
+          }`}
+        >
+          <TrendingUp className="w-5 h-5" />
+          <span className="text-[10px] mt-0.5">{language === "kn" ? "ಮಾರುಕಟ್ಟೆ" : "Market"}</span>
+        </button>
+
+        <button
+          onClick={() => setMobileMenuOpen(true)}
+          className="flex flex-col items-center py-1 px-2 rounded-xl text-slate-500 dark:text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-400 transition"
+        >
+          <Menu className="w-5 h-5" />
+          <span className="text-[10px] mt-0.5">{language === "kn" ? "ಇನ್ನಷ್ಟು" : "More"}</span>
+        </button>
+      </nav>
 
       {/* Global Kisan Mitra Voice & Agentic Reasoner Copilot Modal */}
       <KisanMitraModal />

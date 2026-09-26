@@ -1,9 +1,19 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
   title: "KrishiSetu (ಕೃಷಿಸೇತು) | Farm Intelligence & Autonomous Decision Ecosystem",
   description: "Unified soil-to-seed intelligence, disease pathology, satellite NDVI, and APMC market arbitrage for smallholder farmers.",
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5,
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#15803d" },
+    { media: "(prefers-color-scheme: dark)", color: "#064e3b" },
+  ],
 };
 
 export default function RootLayout({
