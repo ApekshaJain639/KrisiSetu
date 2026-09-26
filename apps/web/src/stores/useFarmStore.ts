@@ -193,6 +193,13 @@ export const useFarmStore = create<FarmState>((set) => ({
       return;
     }
 
+    if (!window.isSecureContext && window.location.hostname !== "localhost" && window.location.hostname !== "127.0.0.1") {
+      set({
+        gpsStatusMessage: "Modern mobile browsers require a secure HTTPS connection for GPS access. Use your HTTPS tunnel link (ngrok) to enable location."
+      });
+      return;
+    }
+
     set({ isGpsLocating: true, gpsStatusMessage: "Acquiring GPS fix from satellite/device..." });
 
     return new Promise<void>((resolve) => {

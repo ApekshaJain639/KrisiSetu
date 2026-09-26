@@ -1,6 +1,14 @@
 export function getApiBase(): string {
   const envUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api/v1";
   if (typeof window !== "undefined") {
+    // If the page is running in a secure HTTPS tunnel (ngrok, localtunnel, cloudflared)
+    // and the backend is on local HTTP, use relative /api/v1 so Next.js proxy avoids Mixed Content errors!
+    if (window.location.protocol === "https:") {
+      if (!process.env.NEXT_PUBLIC_API_URL || process.env.NEXT_PUBLIC_API_URL.startsWith("http://")) {
+        return "/api/v1";
+      }
+    }
+
     const host = window.location.hostname;
     if (host && host !== "localhost" && host !== "127.0.0.1") {
       if (envUrl.includes("localhost") || envUrl.includes("127.0.0.1")) {
