@@ -70,6 +70,15 @@ def root():
         "docs": "/docs"
     }
 
+@app.get("/health")
+@app.get("/api/v1/health")
+def health_check():
+    return {
+        "status": "HEALTHY",
+        "service": "krisisetu-api",
+        "version": settings.VERSION,
+    }
+
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run("app.main:app", host="0.0.0.0", port=8000, reload=True)
