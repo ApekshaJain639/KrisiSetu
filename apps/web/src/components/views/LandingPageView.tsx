@@ -27,27 +27,30 @@ export const LandingPageView: React.FC = () => {
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-krishi-darkbg text-slate-900 dark:text-white transition-colors animate-fadeIn">
       {/* Landing Navbar */}
-      <header className="sticky top-0 z-40 bg-[#0d2818]/95 backdrop-blur-md text-white border-b border-[#1a4228] px-4 sm:px-8 py-3.5 flex items-center justify-between">
+      <header className="sticky top-0 z-40 bg-[#072014]/95 backdrop-blur-md text-white border-b border-[#123e25] px-4 sm:px-8 py-3.5 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-xl bg-krishi-gold text-slate-950 font-black flex items-center justify-center text-lg shadow-md">
-            🌿
+          <div className="w-9 h-9 rounded-xl bg-[#F59E0B] text-slate-950 font-black flex items-center justify-center shadow-md shadow-amber-500/20">
+            <svg className="w-5 h-5 text-slate-950" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/>
+              <path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/>
+            </svg>
           </div>
           <div>
             <span className="font-black text-lg tracking-tight text-white block leading-tight">
               KrishiSetu
             </span>
-            <span className="text-[10px] font-bold text-emerald-300 uppercase tracking-widest block leading-tight">
+            <span className="text-[10px] font-bold text-emerald-400 uppercase tracking-widest block leading-tight">
               FARM INTELLIGENCE
             </span>
           </div>
         </div>
 
-        {/* Center Links matching screenshot on page 18 */}
-        <nav className="hidden md:flex items-center gap-8 text-xs font-semibold text-emerald-100">
+        {/* Center Links matching screenshot */}
+        <nav className="hidden md:flex items-center gap-8 text-xs font-semibold text-emerald-100/90">
           <button onClick={() => setViewMode("app")} className="hover:text-white transition-colors">
             How it works
           </button>
-          <button onClick={() => setViewMode("app")} className="hover:text-white transition-colors">
+          <button onClick={() => { setViewMode("app"); setActiveTab("crop-guide"); }} className="hover:text-white transition-colors">
             Farm tools
           </button>
           <button onClick={() => setViewMode("app")} className="hover:text-white transition-colors">
@@ -60,7 +63,7 @@ export const LandingPageView: React.FC = () => {
           {/* Dark / Light Mode Toggle */}
           <button
             onClick={toggleTheme}
-            className="p-2 rounded-xl bg-white/10 hover:bg-white/20 text-white transition"
+            className="p-2 rounded-xl bg-white/10 hover:bg-white/20 text-white transition border border-white/10"
             title="Toggle theme"
           >
             {theme === "light" ? <Moon className="w-4 h-4" /> : <Sun className="w-4 h-4 text-amber-300" />}
@@ -69,10 +72,10 @@ export const LandingPageView: React.FC = () => {
           {/* Language Toggle */}
           <button
             onClick={() => setLanguage(language === "kn" ? "en" : "kn")}
-            className="px-2.5 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-xs font-bold text-white transition flex items-center gap-1"
+            className="px-2.5 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-xs font-bold text-white transition flex items-center gap-1.5 border border-white/10"
           >
-            <Globe className="w-3.5 h-3.5 text-krishi-gold" />
-            <span>{language === "kn" ? "English" : "ಕನ್ನಡ"}</span>
+            <Globe className="w-3.5 h-3.5 text-[#F59E0B]" />
+            <span>ಕನ್ನಡ</span>
           </button>
 
           <button
@@ -84,7 +87,7 @@ export const LandingPageView: React.FC = () => {
 
           <button
             onClick={() => setViewMode("app")}
-            className="px-4 py-2 bg-krishi-gold hover:bg-amber-400 text-slate-950 font-black text-xs rounded-xl shadow-md transition-all hover:scale-105 flex items-center gap-1.5"
+            className="px-4 py-2 bg-[#F59E0B] hover:bg-amber-400 text-slate-950 font-black text-xs rounded-xl shadow-md transition-all hover:scale-105 flex items-center gap-1.5"
           >
             <span>Try Farm AI</span>
             <ArrowRight className="w-3.5 h-3.5" />
@@ -92,19 +95,19 @@ export const LandingPageView: React.FC = () => {
         </div>
       </header>
 
-      {/* Hero Section matching PDF page 18 top screenshot */}
-      <section className="relative overflow-hidden bg-gradient-to-b from-[#0d2818] via-[#10331f] to-[#07170e] text-white py-16 sm:py-24 px-4 sm:px-8">
+      {/* Hero Section matching uploaded screenshot */}
+      <section className="relative overflow-hidden bg-gradient-to-b from-[#082416] via-[#092b1a] to-[#061c11] text-white py-14 sm:py-20 px-4 sm:px-8">
         <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
           {/* Hero Left Content */}
           <div className="lg:col-span-7 space-y-6">
-            <div className="inline-flex items-center gap-2 bg-emerald-500/20 border border-emerald-400/30 text-emerald-200 text-xs px-3 py-1.5 rounded-full font-bold">
-              <span>🌱</span>
+            <div className="inline-flex items-center gap-2 bg-emerald-950/80 border border-emerald-600/40 text-emerald-300 text-xs px-3.5 py-1.5 rounded-full font-semibold">
+              <span className="text-emerald-400">🌱</span>
               <span>Built for Dakshina Kannada farmers</span>
             </div>
 
             <h1 className="text-4xl sm:text-6xl font-black tracking-tight text-white leading-tight">
               Better decisions. <br />
-              <span className="text-krishi-gold">Healthier farms.</span>
+              <span className="text-[#F59E0B]">Healthier farms.</span>
             </h1>
 
             <p className="text-base sm:text-lg text-emerald-100/90 max-w-xl font-normal leading-relaxed">
@@ -114,7 +117,7 @@ export const LandingPageView: React.FC = () => {
             <div className="flex flex-wrap items-center gap-4 pt-2">
               <button
                 onClick={() => setViewMode("app")}
-                className="px-6 py-3.5 bg-krishi-gold hover:bg-amber-400 text-slate-950 font-black text-sm rounded-2xl shadow-xl transition-all hover:scale-105 flex items-center gap-2"
+                className="px-6 py-3.5 bg-[#F59E0B] hover:bg-amber-400 text-slate-950 font-black text-sm rounded-xl shadow-xl shadow-amber-500/20 transition-all hover:scale-105 flex items-center gap-2"
               >
                 <span>Explore Farm AI</span>
                 <ArrowRight className="w-4 h-4" />
@@ -125,7 +128,7 @@ export const LandingPageView: React.FC = () => {
                   setViewMode("app");
                   setActiveTab("crop-guide");
                 }}
-                className="px-6 py-3.5 bg-white/10 hover:bg-white/20 text-white font-bold text-sm rounded-2xl border border-white/20 transition-all flex items-center gap-1.5"
+                className="px-6 py-3.5 bg-white/10 hover:bg-white/20 text-white font-bold text-sm rounded-xl border border-white/20 transition-all flex items-center gap-1.5"
               >
                 <span>See the tools</span>
                 <ChevronRight className="w-4 h-4" />
@@ -139,52 +142,52 @@ export const LandingPageView: React.FC = () => {
             </div>
           </div>
 
-          {/* Hero Right: "FARM PULSE" Card matching page 18 */}
+          {/* Hero Right: "FARM PULSE" Card matching screenshot */}
           <div className="lg:col-span-5">
-            <div className="bg-[#143a24]/90 backdrop-blur-xl border border-emerald-500/30 rounded-3xl p-6 shadow-2xl space-y-5">
-              <div className="flex items-center justify-between pb-3 border-b border-emerald-600/30">
+            <div className="bg-[#0b2e1c]/95 backdrop-blur-xl border border-emerald-600/30 rounded-3xl p-6 shadow-2xl space-y-5">
+              <div className="flex items-center justify-between pb-3 border-b border-emerald-700/30">
                 <div>
-                  <span className="text-[10px] font-extrabold uppercase tracking-widest text-emerald-300">
+                  <span className="text-[10px] font-extrabold uppercase tracking-widest text-emerald-400">
                     FARM PULSE
                   </span>
-                  <h3 className="text-lg font-black text-white mt-0.5">
+                  <h3 className="text-xl font-black text-white mt-0.5">
                     Shrinivasa Farm
                   </h3>
                 </div>
-                <span className="px-2.5 py-1 bg-emerald-500/20 text-emerald-300 border border-emerald-400/40 text-[10px] font-bold rounded-full flex items-center gap-1.5">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                <span className="px-3 py-1 bg-emerald-950/80 text-emerald-300 border border-emerald-500/40 text-[10px] font-bold rounded-full flex items-center gap-1.5">
+                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
                   LIVE
                 </span>
               </div>
 
               {/* Crop Health Bar */}
-              <div className="p-4 bg-[#0d2818] rounded-2xl border border-emerald-500/20 space-y-2">
+              <div className="p-4 bg-[#061f13] rounded-2xl border border-emerald-600/20 space-y-2">
                 <div className="flex justify-between text-xs">
-                  <span className="text-emerald-200">Crop health:</span>
-                  <strong className="text-white font-mono">0.76 NDVI</strong>
+                  <span className="text-emerald-200 font-medium">Crop health:</span>
+                  <strong className="text-white font-mono font-bold">0.76 NDVI</strong>
                 </div>
-                <div className="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
-                  <div className="bg-emerald-500 h-full rounded-full" style={{ width: "76%" }}></div>
+                <div className="w-full bg-slate-800 h-2.5 rounded-full overflow-hidden">
+                  <div className="bg-emerald-400 h-full rounded-full" style={{ width: "76%" }}></div>
                 </div>
-                <span className="text-[11px] text-emerald-300 block">
+                <span className="text-[11px] text-emerald-300/80 block">
                   Healthy canopy · 4.2 acres monitored
                 </span>
               </div>
 
               {/* Metrics Grid */}
               <div className="grid grid-cols-2 gap-3 text-center">
-                <div className="p-3 bg-[#0d2818] rounded-2xl border border-emerald-500/20">
-                  <span className="text-[10px] text-emerald-300 uppercase block font-semibold">
-                    Rain Chance
+                <div className="p-4 bg-[#061f13] rounded-2xl border border-emerald-600/20">
+                  <span className="text-[10px] text-emerald-400/80 uppercase block font-bold tracking-wider">
+                    RAIN CHANCE
                   </span>
                   <span className="text-2xl font-black text-white mt-1 block">
                     68%
                   </span>
                 </div>
 
-                <div className="p-3 bg-[#0d2818] rounded-2xl border border-emerald-500/20">
-                  <span className="text-[10px] text-emerald-300 uppercase block font-semibold">
-                    Market Trend
+                <div className="p-4 bg-[#061f13] rounded-2xl border border-emerald-600/20">
+                  <span className="text-[10px] text-emerald-400/80 uppercase block font-bold tracking-wider">
+                    MARKET TREND
                   </span>
                   <span className="text-2xl font-black text-emerald-400 mt-1 block">
                     +4.2%
@@ -194,11 +197,14 @@ export const LandingPageView: React.FC = () => {
 
               {/* Ready Action Pill */}
               <button
-                onClick={() => setViewMode("app")}
-                className="w-full p-3 bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-400/30 rounded-2xl text-xs font-bold text-emerald-200 text-center flex items-center justify-center gap-2 transition"
+                onClick={() => {
+                  setViewMode("app");
+                  setActiveTab("overview");
+                }}
+                className="w-full p-3.5 bg-emerald-900/40 hover:bg-emerald-800/50 border border-emerald-500/30 rounded-2xl text-xs font-bold text-emerald-200 text-center flex items-center justify-center gap-2 transition group"
               >
                 <span>⚡ 3 actions ready for today</span>
-                <ArrowRight className="w-3.5 h-3.5 text-krishi-gold" />
+                <ArrowRight className="w-4 h-4 text-[#F59E0B] group-hover:translate-x-1 transition-transform" />
               </button>
             </div>
           </div>

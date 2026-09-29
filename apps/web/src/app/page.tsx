@@ -46,17 +46,6 @@ export default function AppHome() {
 
   useEffect(() => {
     setMounted(true);
-    if (typeof window !== "undefined") {
-      const params = new URLSearchParams(window.location.search);
-      const v = params.get("view");
-      if (v === "landing" || v === "app" || v === "signin" || v === "admin") {
-        setViewMode(v as any);
-      }
-      const tab = params.get("tab");
-      if (tab) {
-        setActiveTab(tab as any);
-      }
-    }
   }, []);
 
   // Sync dark class on documentElement
@@ -70,20 +59,8 @@ export default function AppHome() {
     }
   }, [theme]);
 
-  if (!mounted) {
-    return (
-      <div className="min-h-screen bg-[#0d2818] flex items-center justify-center text-white">
-        <div className="flex flex-col items-center gap-3">
-          <span className="text-4xl animate-bounce">🌾</span>
-          <span className="font-extrabold text-lg tracking-wider">KRISHISETU</span>
-          <span className="text-xs text-emerald-300">Loading Farm Intelligence...</span>
-        </div>
-      </div>
-    );
-  }
-
   // 1. Public Landing Page view (PDF page 18 top & page 23)
-  if (viewMode === "landing") {
+  if (!mounted || viewMode === "landing") {
     return <LandingPageView />;
   }
 
