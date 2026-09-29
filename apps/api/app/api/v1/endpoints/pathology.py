@@ -20,19 +20,19 @@ async def diagnose_crop_leaf(
     filename = file.filename if file else None
     result = await vision_engine.diagnose_leaf(image_bytes, crop_hint, filename=filename)
 
+    # If the uploaded image is NOT a plant, return invalid status without creating false disease records
     if not result.is_valid_plant:
         return {
             "scan_id": None,
             "is_valid_plant": False,
             "detected_object": result.detected_object,
             "rejection_reason": result.rejection_reason,
-            "plant_probability_pct": result.plant_probability_pct,
-            "crop_name": "Non-Plant / Unrecognized",
-            "detected_disease": "Invalid Upload: Not an Agricultural Plant",
-            "disease_name": "Invalid Upload: Not an Agricultural Plant",
-            "pathogen": "N/A (Non-plant object)",
-            "confidence_pct": 0.0,
-            "confidence_score": 0.0,
+            "crop_name": "Non-Plant",
+            "detected_disease": result.detected_disease,
+            "disease_name": result.detected_disease,
+            "pathogen": "None (Non-Plant Subject)",
+            "confidence_pct": result.confidence_pct,
+            "confidence_score": round(result.confidence_pct / 100.0, 4),
             "severity_index_pct": 0.0,
             "dsi_severity_score": 0,
             "gradcam_heatmap_url": None,
@@ -42,11 +42,11 @@ async def diagnose_crop_leaf(
             "prescriptions": {
                 "chemical": "",
                 "traditional": "",
-                "bio": ""
+                "bio": "",
             }
         }
 
-    # Persist genuine diagnosis in SQLite database
+    # Persist verified botanical diagnosis in SQLite database
     scan = ScanRecord(
         farmer_id=farmer_id or 1,
         disease_name=result.detected_disease,
@@ -66,7 +66,6 @@ async def diagnose_crop_leaf(
         "is_valid_plant": True,
         "detected_object": result.detected_object,
         "rejection_reason": None,
-        "plant_probability_pct": result.plant_probability_pct,
         "crop_name": result.crop_name,
         "detected_disease": result.detected_disease,
         "disease_name": result.detected_disease,
