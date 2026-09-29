@@ -117,7 +117,7 @@ export const useFarmStore = create<FarmState>((set) => ({
   language: "kn",
   theme: "light",
   activeTab: "overview",
-  viewMode: "app",
+  viewMode: "landing",
   latitude: 12.7687, // Puttur coordinates
   longitude: 75.2071,
   acreage: 4.2,

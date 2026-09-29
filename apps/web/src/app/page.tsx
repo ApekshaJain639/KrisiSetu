@@ -46,6 +46,17 @@ export default function AppHome() {
 
   useEffect(() => {
     setMounted(true);
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      const v = params.get("view");
+      if (v === "landing" || v === "app" || v === "signin" || v === "admin") {
+        setViewMode(v as any);
+      }
+      const tab = params.get("tab");
+      if (tab) {
+        setActiveTab(tab as any);
+      }
+    }
   }, []);
 
   // Sync dark class on documentElement
