@@ -17,6 +17,10 @@ import {
   ImageIcon,
   X,
   Loader2,
+  AlertOctagon,
+  Ban,
+  Leaf,
+  ShieldAlert,
 } from "lucide-react";
 import { useFarmStore } from "@/stores/useFarmStore";
 import { useTranslation } from "@/lib/i18n/translations";
@@ -154,6 +158,150 @@ const SAMPLES: SampleItem[] = [
   },
 ];
 
+interface ObjectRecognitionResult {
+  isPlant: boolean;
+  detectedObject: string;
+  plantRatio: number;
+  reason?: string;
+}
+
+const NON_PLANT_KEYWORDS = [
+  "bear", "dog", "cat", "car", "bike", "vehicle", "truck", "automobile",
+  "person", "man", "woman", "selfie", "human", "face", "portrait",
+  "document", "invoice", "receipt", "pdf", "bill", "screenshot",
+  "laptop", "computer", "phone", "mobile", "keyboard", "mouse", "screen",
+  "chair", "table", "desk", "room", "building", "house", "furniture",
+  "animal", "bird", "lion", "tiger", "elephant", "cow", "horse"
+];
+
+const checkIsPlantClientSide = async (file: File): Promise<ObjectRecognitionResult> => {
+  // 1. Filename keyword check
+  const fn = file.name.toLowerCase();
+  for (const kw of NON_PLANT_KEYWORDS) {
+    if (fn.includes(kw)) {
+      return {
+        isPlant: false,
+        detectedObject: `Non-plant object (${kw.charAt(0).toUpperCase() + kw.slice(1)})`,
+        plantRatio: 0.0,
+        reason: `Filename indicates an invalid non-plant object (${kw}). Please upload an image of a real agricultural crop or leaf.`
+      };
+    }
+  }
+
+  // 2. Client-side Canvas Botanical Vision Analysis
+  return new Promise((resolve) => {
+    try {
+      const img = new Image();
+      const tempUrl = URL.createObjectURL(file);
+      img.onload = () => {
+        try {
+          const canvas = document.createElement("canvas");
+          const ctx = canvas.getContext("2d", { willReadFrequently: true });
+          if (!ctx) {
+            URL.revokeObjectURL(tempUrl);
+            return resolve({ isPlant: true, detectedObject: "Plant", plantRatio: 90 });
+          }
+          canvas.width = 64;
+          canvas.height = 64;
+          ctx.drawImage(img, 0, 0, 64, 64);
+          URL.revokeObjectURL(tempUrl);
+
+          const { data } = ctx.getImageData(0, 0, 64, 64);
+          let plantPixels = 0;
+          let skinPixels = 0;
+          let bluePixels = 0;
+          let monoPixels = 0;
+          let darkPixels = 0;
+          const total = 64 * 64;
+
+          for (let i = 0; i < data.length; i += 4) {
+            const r = data[i];
+            const g = data[i + 1];
+            const b = data[i + 2];
+
+            const exg = 2 * g - r - b;
+
+            const max = Math.max(r, g, b);
+            const min = Math.min(r, g, b);
+            const d = max - min;
+            let h = 0;
+            if (d > 0) {
+              if (max === r) h = ((g - b) / d + (g < b ? 6 : 0)) * 60;
+              else if (max === g) h = ((b - r) / d + 2) * 60;
+              else h = ((r - g) / d + 4) * 60;
+            }
+            const s = max === 0 ? 0 : d / max;
+            const v = max / 255;
+
+            // Plant / foliage / chlorosis / necrotic lesion hue [20° to 160°]
+            if (((h >= 20 && h <= 160) && s >= 0.18 && v >= 0.15) || exg > 10) {
+              plantPixels++;
+            }
+
+            // Skin tone
+            if (r > 95 && g > 40 && b > 20 && r > g && (r - g) > 12 && r > b && (h <= 30 || h >= 335)) {
+              skinPixels++;
+            }
+
+            // Blue / screen
+            if (b > r + 20 && b > g + 10 && b > 60) {
+              bluePixels++;
+            }
+
+            // Monochrome
+            if (Math.abs(r - g) < 14 && Math.abs(g - b) < 14 && v > 0.65) {
+              monoPixels++;
+            }
+
+            // Dark
+            if (v < 0.16) {
+              darkPixels++;
+            }
+          }
+
+          const plantRatio = (plantPixels / total) * 100;
+          const skinRatio = (skinPixels / total) * 100;
+          const blueRatio = (bluePixels / total) * 100;
+          const monoRatio = (monoPixels / total) * 100;
+          const darkRatio = (darkPixels / total) * 100;
+
+          if (plantRatio < 16 || (skinRatio > 26 && plantRatio < 25)) {
+            let detectedObject = "Non-plant Object";
+            if (skinRatio > 24) detectedObject = "Human Portrait / Face";
+            else if (blueRatio > 28) detectedObject = "Vehicle / Metallic / Sky Object";
+            else if (monoRatio > 38) detectedObject = "Document / Screen / Paper";
+            else if (darkRatio > 55) detectedObject = "Dark / Indoor Background";
+            else detectedObject = "Non-botanical Subject / Animal";
+
+            resolve({
+              isPlant: false,
+              detectedObject,
+              plantRatio: Math.round(plantRatio * 10) / 10,
+              reason: `KrishiSetu AI detected: ${detectedObject} (Botanical affinity: ${plantRatio.toFixed(1)}%). Our pathology scanner requires a clear photograph of an agricultural crop, leaf, or fruit.`
+            });
+          } else {
+            resolve({
+              isPlant: true,
+              detectedObject: "Plant / Agricultural Crop Leaf",
+              plantRatio: Math.round(plantRatio * 10) / 10
+            });
+          }
+        } catch {
+          URL.revokeObjectURL(tempUrl);
+          resolve({ isPlant: true, detectedObject: "Plant", plantRatio: 85 });
+        }
+      };
+      img.onerror = () => {
+        URL.revokeObjectURL(tempUrl);
+        resolve({ isPlant: true, detectedObject: "Plant", plantRatio: 85 });
+      };
+      img.src = tempUrl;
+    } catch {
+      resolve({ isPlant: true, detectedObject: "Plant", plantRatio: 85 });
+    }
+  });
+};
+
 // Simulated AI analysis result for user-uploaded photos
 const analyzeUploadedImage = async (file: File): Promise<SampleItem> => {
   // Simulate network latency for the AI model call
@@ -179,6 +327,14 @@ export const LeafScanView: React.FC = () => {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [uploadError, setUploadError] = useState<string | null>(null);
 
+  // ── Object Recognition & Invalid Plant State ──
+  const [isInvalidPlant, setIsInvalidPlant] = useState<boolean>(false);
+  const [invalidPlantInfo, setInvalidPlantInfo] = useState<{
+    detectedObject: string;
+    rejectionReason: string;
+    plantAffinity: number;
+  } | null>(null);
+
   // ── Scan result state ──
   const [activeSample, setActiveSample] = useState<SampleItem>(SAMPLES[0]);
   const [hasUserScan, setHasUserScan] = useState(false);
@@ -190,6 +346,8 @@ export const LeafScanView: React.FC = () => {
   // ── Handle file selection (from file picker or camera) ──
   const processFile = useCallback(async (file: File) => {
     setUploadError(null);
+    setIsInvalidPlant(false);
+    setInvalidPlantInfo(null);
 
     // Validate type & size
     if (!file.type.startsWith("image/")) {
@@ -208,12 +366,48 @@ export const LeafScanView: React.FC = () => {
     setIsAnalyzing(true);
 
     try {
+      // 1. Client-side botanical object recognition pre-check
+      const clientCheck = await checkIsPlantClientSide(file);
+
+      // 2. Call FastAPI backend pathology & object recognition endpoint
       const backendRes = await diagnoseLeafPhoto(
         file,
         "Arecanut",
         currentUser?.userId,
         currentUser?.taluk || "Puttur"
       );
+
+      // Check whether image is rejected as non-plant
+      const isRejectedAsNonPlant =
+        (backendRes && backendRes.is_valid_plant === false) ||
+        (!backendRes && !clientCheck.isPlant);
+
+      if (isRejectedAsNonPlant) {
+        setIsInvalidPlant(true);
+        const detectedObj =
+          backendRes?.detected_object || clientCheck.detectedObject || "Non-Plant Subject";
+        const reason =
+          backendRes?.rejection_reason ||
+          clientCheck.reason ||
+          "The uploaded image does not contain agricultural plant foliage, crop tissue, or fruits.";
+        const affinity =
+          typeof backendRes?.plant_probability_pct === "number"
+            ? backendRes.plant_probability_pct
+            : clientCheck.plantRatio;
+
+        setInvalidPlantInfo({
+          detectedObject: detectedObj,
+          rejectionReason: reason,
+          plantAffinity: affinity,
+        });
+        setHasUserScan(true);
+        return;
+      }
+
+      // Valid plant confirmed!
+      setIsInvalidPlant(false);
+      setInvalidPlantInfo(null);
+
       if (backendRes) {
         const diseaseTitle = backendRes.detected_disease || backendRes.disease_name || "Arecanut Koleroga (Phytophthora meadii)";
         const pathogenName = backendRes.pathogen || "Phytophthora meadii";
@@ -276,6 +470,8 @@ export const LeafScanView: React.FC = () => {
     setIsScanning(true);
     setUploadedImageURL(null);
     setHasUserScan(false);
+    setIsInvalidPlant(false);
+    setInvalidPlantInfo(null);
     setTimeout(() => {
       setActiveSample(s);
       setIsScanning(false);
@@ -288,6 +484,8 @@ export const LeafScanView: React.FC = () => {
     setUploadedFileName("");
     setUploadError(null);
     setHasUserScan(false);
+    setIsInvalidPlant(false);
+    setInvalidPlantInfo(null);
   };
 
   // Display image: user upload preview or sample remote URL
@@ -360,22 +558,31 @@ export const LeafScanView: React.FC = () => {
 
           {/* Dropzone / Preview */}
           {uploadedImageURL ? (
-            <div className="relative rounded-2xl overflow-hidden border-2 border-krishi-500 bg-slate-900">
+            <div className={`relative rounded-2xl overflow-hidden border-2 ${
+              isInvalidPlant ? "border-rose-500 shadow-md shadow-rose-500/20" : "border-krishi-500"
+            } bg-slate-900`}>
               {/* Preview image — user upload (blob URL) */}
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={uploadedImageURL!}
-                alt="Uploaded leaf"
+                alt="Uploaded subject"
                 className="w-full h-48 object-cover"
               />
+              {/* Invalid plant indicator badge on preview */}
+              {isInvalidPlant && !isAnalyzing && (
+                <div className="absolute top-2 left-2 bg-rose-600/95 backdrop-blur-md px-2.5 py-1 rounded-lg text-[10px] text-white font-bold flex items-center gap-1.5 shadow-lg border border-rose-400/50">
+                  <AlertOctagon className="w-3.5 h-3.5 animate-pulse" />
+                  <span>{language === "kn" ? "ಅಮಾನ್ಯ: ಸಸ್ಯವಲ್ಲದ ವಸ್ತು" : "Invalid Object: Not a Plant"}</span>
+                </div>
+              )}
               {/* Analyzing overlay */}
               {isAnalyzing && (
                 <div className="absolute inset-0 bg-black/60 backdrop-blur-sm flex flex-col items-center justify-center gap-3 text-white">
                   <Loader2 className="w-8 h-8 animate-spin text-krishi-gold" />
                   <span className="text-xs font-bold">
-                    {language === "kn" ? "AI ವಿಶ್ಲೇಷಣೆ..." : "AI Analyzing..."}
+                    {language === "kn" ? "ವಸ್ತು ಮತ್ತು ಸಸ್ಯ ಗುರುತಿಸುವಿಕೆ..." : "Object & Plant Verification..."}
                   </span>
-                  <span className="text-[10px] text-slate-300">EfficientNetV2 · Grad-CAM</span>
+                  <span className="text-[10px] text-slate-300">PyTorch EfficientNetV2 · Grad-CAM</span>
                 </div>
               )}
               {/* Clear button */}
@@ -429,14 +636,24 @@ export const LeafScanView: React.FC = () => {
             </div>
           )}
 
-          {/* Success badge after analysis */}
-          {hasUserScan && !isAnalyzing && (
+          {/* Success or Rejection badge after analysis */}
+          {hasUserScan && !isAnalyzing && !isInvalidPlant && (
             <div className="flex items-center gap-2 text-xs text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/40 px-3 py-2 rounded-xl">
               <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />
               <span>
                 {language === "kn"
-                  ? "ವಿಶ್ಲೇಷಣೆ ಪೂರ್ಣ — ಫಲಿತಾಂಶ ಬಲಭಾಗದಲ್ಲಿ ನೋಡಿ"
-                  : "Analysis complete — see results on the right"}
+                  ? "ಸಸ್ಯ ಗುರುತಿಸಲಾಗಿದೆ · ಫಲಿತಾಂಶ ಬಲಭಾಗದಲ್ಲಿ ನೋಡಿ"
+                  : "Plant verified · Diagnosis displayed on the right"}
+              </span>
+            </div>
+          )}
+          {hasUserScan && !isAnalyzing && isInvalidPlant && (
+            <div className="flex items-center gap-2 text-xs text-rose-700 dark:text-rose-300 bg-rose-50 dark:bg-rose-950/40 border border-rose-300 dark:border-rose-800/60 px-3 py-2 rounded-xl">
+              <AlertOctagon className="w-3.5 h-3.5 shrink-0 text-rose-600" />
+              <span>
+                {language === "kn"
+                  ? "ಅಮಾನ್ಯ ವಸ್ತು: ಸಸ್ಯವಲ್ಲ. ಬಲಭಾಗದಲ್ಲಿ ವಿವರ ನೋಡಿ."
+                  : "Invalid subject: Not a plant. See details on the right."}
               </span>
             </div>
           )}
@@ -484,37 +701,154 @@ export const LeafScanView: React.FC = () => {
 
         {/* ── Right Column: Scan Result ── */}
         <div className="lg:col-span-7 bg-white dark:bg-krishi-darkcard p-6 rounded-2xl border border-slate-200 dark:border-krishi-darkborder shadow-sm space-y-5">
-          <div className="flex items-center justify-between">
-            <div>
-              <span className="text-[10px] font-extrabold uppercase tracking-widest text-slate-400">
-                {t.step2FieldNote}
-              </span>
-              <h3 className="text-base font-bold text-slate-900 dark:text-white">
-                {hasUserScan
-                  ? (language === "kn" ? "ನಿಮ್ಮ ಫೋಟೋ ಫಲಿತಾಂಶ" : "Your Photo Result")
-                  : t.yourScanResult}
-              </h3>
-            </div>
+          {isInvalidPlant ? (
+            /* ── Dedicated Invalid Object Recognition & Rejection Screen ── */
+            <div className="space-y-5 animate-fadeIn">
+              {/* Alert Banner */}
+              <div className="p-5 bg-rose-50/90 dark:bg-rose-950/40 border-2 border-rose-400 dark:border-rose-800/80 rounded-2xl space-y-3 shadow-sm">
+                <div className="flex items-start gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-rose-100 dark:bg-rose-900/60 text-rose-600 dark:text-rose-300 flex items-center justify-center shrink-0 mt-0.5">
+                    <Ban className="w-6 h-6" />
+                  </div>
+                  <div className="flex-1">
+                    <div className="flex items-center justify-between flex-wrap gap-2">
+                      <span className="text-[10px] font-black uppercase tracking-wider bg-rose-200 dark:bg-rose-900 text-rose-900 dark:text-rose-200 px-2.5 py-0.5 rounded-full">
+                        {language === "kn" ? "ಅಮಾನ್ಯ ವಸ್ತು ಪತ್ತೆ" : "Object Recognition Alert"}
+                      </span>
+                      <span className="text-xs font-mono font-bold text-rose-700 dark:text-rose-300 bg-white/70 dark:bg-black/40 px-2 py-0.5 rounded border border-rose-200 dark:border-rose-800">
+                        {invalidPlantInfo?.plantAffinity ?? 0}% Plant Affinity
+                      </span>
+                    </div>
+                    <h4 className="text-lg font-black text-rose-900 dark:text-rose-100 mt-1">
+                      {language === "kn" ? "ಇದು ಸಸ್ಯ/ಬೆಳೆ ಅಲ್ಲ (ಅಮಾನ್ಯ ಫೋಟೋ)" : "Invalid Subject: Not an Agricultural Plant"}
+                    </h4>
+                    <p className="text-xs text-rose-800 dark:text-rose-200 mt-1 leading-relaxed">
+                      {invalidPlantInfo?.rejectionReason ||
+                        "KrishiSetu AI detected a non-plant subject. Our diagnostic neural network only processes photos of crops, leaves, stems, or fruits."}
+                    </p>
+                  </div>
+                </div>
 
-            <div className="flex items-center gap-2">
-              <span className="text-xs font-black bg-rose-100 dark:bg-rose-950/60 text-rose-800 dark:text-rose-300 px-2.5 py-1 rounded-full border border-rose-200 dark:border-rose-900/40">
-                {activeSample.confidence.toFixed(1)}% {t.confidence}
-              </span>
-              <span className="text-xs font-black bg-amber-100 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300 px-2.5 py-1 rounded-full border border-amber-200 dark:border-amber-900/40">
-                {activeSample.dsi}% DSI
-              </span>
-            </div>
-          </div>
+                <div className="p-3 bg-white/80 dark:bg-slate-900/80 rounded-xl border border-rose-200 dark:border-rose-900/50 flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <span className="text-base">🔍</span>
+                    <span className="text-xs font-bold text-slate-800 dark:text-slate-200">
+                      {language === "kn" ? "ಪತ್ತೆಯಾದ ವಸ್ತು:" : "Detected Subject:"}
+                    </span>
+                    <span className="text-xs font-black text-rose-600 dark:text-rose-400">
+                      {invalidPlantInfo?.detectedObject || "Non-Plant Subject"}
+                    </span>
+                  </div>
+                  <span className="text-[10px] font-extrabold uppercase text-rose-600 dark:text-rose-400 bg-rose-100 dark:bg-rose-950/60 px-2 py-0.5 rounded border border-rose-200 dark:border-rose-900">
+                    DIAGNOSIS REJECTED
+                  </span>
+                </div>
+              </div>
 
-          {/* Disease Card */}
-          <div className="p-4 bg-emerald-50/60 dark:bg-emerald-950/20 border border-emerald-200 dark:border-emerald-900/30 rounded-xl">
-            <h4 className="text-base font-extrabold text-slate-900 dark:text-white">
-              {isScanning ? "Analyzing..." : activeSample.disease}
-            </h4>
-            <p className="text-xs text-emerald-800 dark:text-emerald-300 font-medium mt-0.5">
-              Pathogen: <em>{activeSample.pathogen}</em>
-            </p>
-          </div>
+              {/* Preview image with Red Rejection Bounding Box */}
+              <div className="relative w-full h-64 sm:h-72 rounded-2xl overflow-hidden border-2 border-rose-400 dark:border-rose-700 bg-slate-950 shadow-inner">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={uploadedImageURL || ""}
+                  alt="Invalid Upload"
+                  className="w-full h-full object-cover opacity-75"
+                />
+                {/* Red crosshair rejection overlay */}
+                <div className="absolute inset-0 bg-rose-950/20 flex flex-col items-center justify-center pointer-events-none p-4">
+                  <div className="border-2 border-dashed border-rose-500 rounded-xl w-4/5 h-4/5 flex flex-col items-center justify-center p-4 bg-black/50 backdrop-blur-[2px]">
+                    <AlertOctagon className="w-12 h-12 text-rose-400 animate-bounce mb-2" />
+                    <span className="text-xs font-black text-white bg-rose-600/95 px-3 py-1 rounded-full uppercase tracking-wider text-center shadow">
+                      {language === "kn" ? "ಸಸ್ಯವಲ್ಲದ ವಸ್ತು" : "Non-Plant Object"}
+                    </span>
+                    <span className="text-[11px] text-rose-200 mt-1 font-mono text-center">
+                      [ Prescription Safety Block Active ]
+                    </span>
+                  </div>
+                </div>
+                <div className="absolute bottom-3 left-3 bg-black/80 px-3 py-1 rounded-lg text-[10px] text-rose-300 font-mono flex items-center gap-1.5 border border-rose-500/40">
+                  <span className="w-2 h-2 rounded-full bg-rose-500" />
+                  Botanical Classification: FAILED
+                </div>
+              </div>
+
+              {/* Guidance on accepted specimens */}
+              <div className="p-4 bg-slate-50 dark:bg-krishi-darkbg border border-slate-200 dark:border-slate-800 rounded-xl space-y-3">
+                <h5 className="text-xs font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                  <Leaf className="w-4 h-4 text-emerald-600" />
+                  <span>{language === "kn" ? "ಕೃಷಿಸೇತು ಮೂಲಕ ಯಾವ ಬೆಳೆಗಳನ್ನು ಸ್ಕ್ಯಾನ್ ಮಾಡಬಹುದು?" : "What agricultural crops can you scan?"}</span>
+                </h5>
+                <div className="grid grid-cols-2 gap-2 text-xs text-slate-700 dark:text-slate-300">
+                  <div className="flex items-center gap-2 p-2 rounded-lg bg-white dark:bg-krishi-darkcard border border-slate-200 dark:border-slate-700">
+                    <span className="text-emerald-600 font-bold">✓</span>
+                    <span>{language === "kn" ? "ಅಡಿಕೆ ಹಳದಿ ಎಲೆ / ಮಹಾಲಿ" : "Arecanut Leaves & Koleroga"}</span>
+                  </div>
+                  <div className="flex items-center gap-2 p-2 rounded-lg bg-white dark:bg-krishi-darkcard border border-slate-200 dark:border-slate-700">
+                    <span className="text-emerald-600 font-bold">✓</span>
+                    <span>{language === "kn" ? "ಭತ್ತದ ಬೆಂಕಿ ರೋಗ (ಬ್ಲಾಸ್ಟ್)" : "Paddy Blast & Leaf Sheath"}</span>
+                  </div>
+                  <div className="flex items-center gap-2 p-2 rounded-lg bg-white dark:bg-krishi-darkcard border border-slate-200 dark:border-slate-700">
+                    <span className="text-emerald-600 font-bold">✓</span>
+                    <span>{language === "kn" ? "ತರಕಾರಿ ಎಲೆಗಳ ಚುಕ್ಕೆ ರೋಗ" : "Tomato / Vegetable Blight"}</span>
+                  </div>
+                  <div className="flex items-center gap-2 p-2 rounded-lg bg-white dark:bg-krishi-darkcard border border-slate-200 dark:border-slate-700">
+                    <span className="text-emerald-600 font-bold">✓</span>
+                    <span>{language === "kn" ? "ತೆಂಗು & ಕಾಳುಮೆಣಸು ಗರಿಗಳು" : "Coconut & Pepper Fronds"}</span>
+                  </div>
+                </div>
+
+                {/* Quick Action buttons */}
+                <div className="pt-2 flex flex-wrap gap-2">
+                  <button
+                    onClick={() => handleSimulateScan(SAMPLES[0])}
+                    className="flex-1 py-2.5 px-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition flex items-center justify-center gap-2 shadow-sm"
+                  >
+                    <Leaf className="w-4 h-4" />
+                    <span>{language === "kn" ? "ಮಾದರಿ ಅಡಿಕೆ ಎಲೆ ಪ್ರಯತ್ನಿಸಿ" : "Try Reference Plant Leaf"}</span>
+                  </button>
+                  <button
+                    onClick={() => fileInputRef.current?.click()}
+                    className="py-2.5 px-4 bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 text-slate-800 dark:text-slate-200 rounded-xl text-xs font-bold transition flex items-center gap-1.5"
+                  >
+                    <Upload className="w-3.5 h-3.5" />
+                    <span>{language === "kn" ? "ಮತ್ತೆ ಅಪ್‌ಲೋಡ್ ಮಾಡಿ" : "Choose Another"}</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          ) : (
+            /* ── Normal Pathology Diagnosis & Prescriptions ── */
+            <>
+              <div className="flex items-center justify-between">
+                <div>
+                  <span className="text-[10px] font-extrabold uppercase tracking-widest text-slate-400">
+                    {t.step2FieldNote}
+                  </span>
+                  <h3 className="text-base font-bold text-slate-900 dark:text-white">
+                    {hasUserScan
+                      ? (language === "kn" ? "ನಿಮ್ಮ ಫೋಟೋ ಫಲಿತಾಂಶ" : "Your Photo Result")
+                      : t.yourScanResult}
+                  </h3>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <span className="text-xs font-black bg-rose-100 dark:bg-rose-950/60 text-rose-800 dark:text-rose-300 px-2.5 py-1 rounded-full border border-rose-200 dark:border-rose-900/40">
+                    {activeSample.confidence.toFixed(1)}% {t.confidence}
+                  </span>
+                  <span className="text-xs font-black bg-amber-100 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300 px-2.5 py-1 rounded-full border border-amber-200 dark:border-amber-900/40">
+                    {activeSample.dsi}% DSI
+                  </span>
+                </div>
+              </div>
+
+              {/* Disease Card */}
+              <div className="p-4 bg-emerald-50/60 dark:bg-emerald-950/20 border border-emerald-200 dark:border-emerald-900/30 rounded-xl">
+                <h4 className="text-base font-extrabold text-slate-900 dark:text-white">
+                  {isScanning ? "Analyzing..." : activeSample.disease}
+                </h4>
+                <p className="text-xs text-emerald-800 dark:text-emerald-300 font-medium mt-0.5">
+                  Pathogen: <em>{activeSample.pathogen}</em>
+                </p>
+              </div>
 
           {/* Grad-CAM Heatmap Viewer */}
           <div className="space-y-2">
@@ -704,8 +1038,10 @@ export const LeafScanView: React.FC = () => {
               daysElapsed={4}
             />
           </div>
-        </div>
-      </div>
+        </>
+      )}
     </div>
+  </div>
+</div>
   );
 };

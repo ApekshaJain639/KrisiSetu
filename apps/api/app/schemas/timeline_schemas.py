@@ -2,6 +2,10 @@ from pydantic import BaseModel
 from typing import Optional, List
 
 class PathologyDiagnosisResponse(BaseModel):
+    is_valid_plant: bool = True
+    detected_object: Optional[str] = "Plant / Agricultural Crop Leaf"
+    rejection_reason: Optional[str] = None
+    plant_probability_pct: Optional[float] = 96.0
     crop_name: str
     detected_disease: str
     confidence_pct: float

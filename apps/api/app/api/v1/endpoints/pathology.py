@@ -17,9 +17,36 @@ async def diagnose_crop_leaf(
     db: AsyncSession = Depends(get_db)
 ):
     image_bytes = await file.read() if file else None
-    result = await vision_engine.diagnose_leaf(image_bytes, crop_hint)
+    filename = file.filename if file else None
+    result = await vision_engine.diagnose_leaf(image_bytes, crop_hint, filename=filename)
 
-    # Persist diagnosis in SQLite database
+    if not result.is_valid_plant:
+        return {
+            "scan_id": None,
+            "is_valid_plant": False,
+            "detected_object": result.detected_object,
+            "rejection_reason": result.rejection_reason,
+            "plant_probability_pct": result.plant_probability_pct,
+            "crop_name": "Non-Plant / Unrecognized",
+            "detected_disease": "Invalid Upload: Not an Agricultural Plant",
+            "disease_name": "Invalid Upload: Not an Agricultural Plant",
+            "pathogen": "N/A (Non-plant object)",
+            "confidence_pct": 0.0,
+            "confidence_score": 0.0,
+            "severity_index_pct": 0.0,
+            "dsi_severity_score": 0,
+            "gradcam_heatmap_url": None,
+            "prescription_chemical": "",
+            "prescription_traditional": "",
+            "prescription_bio": "",
+            "prescriptions": {
+                "chemical": "",
+                "traditional": "",
+                "bio": ""
+            }
+        }
+
+    # Persist genuine diagnosis in SQLite database
     scan = ScanRecord(
         farmer_id=farmer_id or 1,
         disease_name=result.detected_disease,
@@ -36,6 +63,10 @@ async def diagnose_crop_leaf(
 
     return {
         "scan_id": scan.id,
+        "is_valid_plant": True,
+        "detected_object": result.detected_object,
+        "rejection_reason": None,
+        "plant_probability_pct": result.plant_probability_pct,
         "crop_name": result.crop_name,
         "detected_disease": result.detected_disease,
         "disease_name": result.detected_disease,
